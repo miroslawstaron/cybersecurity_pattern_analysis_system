@@ -13,10 +13,16 @@
 # coordinating the algorithm execution
 
 # import libraries needed for the system
-import sys
-from print_header import print_header, print_end
-from parse_arguments import parse_arguments
-from checks import check_folders
+import sys                                              # system library
+import logging                                          # logging library
+from print_header import print_header, print_end        # prints the header and the end message
+from parse_arguments import parse_arguments             # parses the arguments
+from checks import check_folders                        # checks if the folders exist and are not empty
+from setup_dirs import create_workdir                   # creates the working directory
+from setup_dirs import copy_folders                     # copies the folders to the working directory
+
+# configuration parameters
+strWorkDir = '/mnt/c/Users/miros/Documents/Code/cybersecurity_pattern_analysis_system/workdir'                                  # working directory
 
 # print the welcome message
 print_header()
@@ -31,6 +37,12 @@ meFolder, vceFolder = parse_arguments()
 
 # check if the folders exist and if they are not empty
 check_folders(meFolder, vceFolder)
+
+# create the working directory
+create_workdir(strWorkDir)
+
+# copy the folders to the working directory
+copy_folders(strWorkDir, meFolder, vceFolder)
 
 # create the feature vectors for the analyzed code
 
