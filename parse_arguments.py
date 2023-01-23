@@ -12,6 +12,7 @@ import sys
 
 # parsing the arguments
 def parse_arguments():
+    print('<< Parsing the arguments')
     # check the number of arguments
     if len(sys.argv) != 5:
         # if there are two arguments, 
@@ -41,8 +42,8 @@ def parse_arguments():
             meFolder = sys.argv[2]
         
         # print the configuration arguments
-        print(f'VCE folder is: {vceFolder}')
-        print(f'ME folder is: {meFolder}')
+        print(f'>> VCE folder is: {vceFolder}')
+        print(f'>> ME folder is: {meFolder}')
     
     # return the parsed folders
     return vceFolder, meFolder
