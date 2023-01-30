@@ -29,3 +29,7 @@ workdir/data/vce/VCE_4_fails_to_check_for_negative.cpp
 workdir/data/vce/VCE_5_null_carries_information.cpp
 workdir/data/vce/VCE_6_unvalidated_does_something.cpp
 workdir/data/vce/VCE_7_unvalidated_multithreading.cpp
+workdir/results/distances_ref.csv
+.gitignore
+workdir/results/distances.csv
+workdir/results/embeddings.csv
