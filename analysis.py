@@ -672,8 +672,16 @@ def analyze_codex(strEmbeddingsFolder):
         mName = module.split('/')[-1]
 
         # print the verdict
-        print(f'Module {mName} is {strVerdict} based on the top 3 closest reference programs')
+        # changed to printing only the violations and then the examples
+        if strVerdict == 'vulnerable':
+            print('*****')
+            print(f'Module {mName} is flagged as {strVerdict}, with the following reference violations:')
 
+            # here we print only the vulnerable modules and not all three
+            # in order to not confuse the user
+            for label in dfModuleLabels:
+                if label.startswith('VCE'):
+                    print(f'>>>> {label}')
 
     return 1
 
@@ -708,7 +716,7 @@ def analyze_ccflex(strEmbeddingsFolder):
         dfModule = dfModule.sort_values(by=['Distance'])
         
         # get the top 3
-        dfModule = dfModule.head(1)
+        dfModule = dfModule.head(1)        
         
         # get the names of the top 3
         dfModuleNames = dfModule['Module']
@@ -725,6 +733,7 @@ def analyze_ccflex(strEmbeddingsFolder):
         iSCEs = 0
         iVCEs = 0
         for label in dfModuleLabels:
+            
             if label.startswith('SCE'):
                 iSCEs += 1
             else:
@@ -736,7 +745,16 @@ def analyze_ccflex(strEmbeddingsFolder):
         mName = module.split('/')[-1]
 
         # print the verdict
-        print(f'Module {mName} is {strVerdict} based on the top 3 closest reference programs')
+        # changed to printing only the violations and then the examples
+        if strVerdict == 'vulnerable':
+            print('*****')
+            print(f'Module {mName} is flagged as {strVerdict}, with the following reference violations:')
 
+            # here we print only the vulnerable modules and not all three
+            # in order to not confuse the user
+            for label in dfModuleLabels:
+                if label.startswith('VCE'):
+                    print(f'>>>> {label}')
+            
 
     return 1
