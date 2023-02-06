@@ -15,6 +15,10 @@ The software uses programming language models to transform each module into an e
 
 The reference code is collected manually as part of a research project and illustrate examples of vulnerabilities as well as their solutions. 
 
+The models that are used in this program are:
+* CCFlex: https://github.com/mochodek/py-ccflex
+* OpenAI Codex: https://openai.com/
+
 ## Repository structure:
 * main.py - the main module to execute with the parameters
 * analysis.py - module that analyzes the distances and find the most similar programs
