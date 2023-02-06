@@ -33,3 +33,4 @@ workdir/results/distances_ref.csv
 .gitignore
 workdir/results/distances.csv
 workdir/results/embeddings.csv
+workdir/key/*
