@@ -49,40 +49,32 @@ print_header()
 meFolder, vceFolder, strModel = parse_arguments()
 
 # check if the folders exist and if they are not empty
-if not bDebug:
-    check_folders(meFolder, vceFolder)
+check_folders(meFolder, vceFolder)
 
 # create the working directory
-if not bDebug:
-    create_workdir(strWorkDir)
-
-# copy the folders to the working directory
-if not bDebug:
-    copy_folders(strWorkDir, meFolder, vceFolder)
+create_workdir(strWorkDir)
 
 # extract embeddings from CodeX
 if strModel == 'codex':
     extract_embeddings_codex(os.path.join(strWorkDir, 'results'), 
                              vceFolder,
-                             meFolder)
+                             meFolder, 
+                             os.path.join(strWorkDir, 'key/openAI_key.txt'))
+    # calculate the similarity between the analyzed code and the reference code
+    calculate_distances_codex(os.path.join(strWorkDir, 'results'))
+
+    # analyze the distances and print the code
+    analyze_codex(os.path.join(strWorkDir, 'results'))
 
 # create the feature vectors for the analyzed code
 if strModel == 'ccflex':
     extract_embeddings_ccflex(os.path.join(strWorkDir, 'results'), 
                               vceFolder)
-
-# create average embeddings, since the original one is per line
-if strModel == 'ccflex':
+    # CCFlex creates embeddings for each line, so we need to create the average embeddings
     create_average_embeddings_ccflex(os.path.join(strWorkDir, 'results'))
-
-# calculate the similarity between the analyzed code and the reference code
-if strModel == 'codex':
-    calculate_distances_codex(os.path.join(strWorkDir, 'results'))
-    analyze_codex(os.path.join(strWorkDir, 'results'))
-
-# visualize the results and provide the user with the analysis' results
-if strModel == 'ccflex':
+    # calculate the similarity between the analyzed code and the reference code
     calculate_distances_ccflex(os.path.join(strWorkDir, 'results'))
+    # analyze the distances and print the code
     analyze_ccflex(os.path.join(strWorkDir, 'results'))
 
 # end the program, print the end message

@@ -20,8 +20,9 @@ def get_embedding(text, engine="code-search-babbage-code-001"):
 
 def extract_embeddings_codex(strEmbeddingsFolder, 
                              strCodeFolder, 
-                             strReferenceCodeFolder):
-    with open('./openAI_key.txt', 'r') as fKey:
+                             strReferenceCodeFolder, 
+                             strCodeXKeyFile):
+    with open(strCodeXKeyFile, 'r') as fKey:
         theKey = fKey.readline()
 
     dictEmbeddingsCode = {}
