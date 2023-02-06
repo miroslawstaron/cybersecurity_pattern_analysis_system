@@ -44,31 +44,11 @@ def create_workdir(strDir):
     else:
         print(f'>> The folder "data" exists [!OK]')
 
-    if not os.path.exists('data/vce'):
-        os.makedirs('data/vce')
-        print(f'>> The folder "data/vce" created [OK]')
+    if not os.path.exists('key'):
+        os.makedirs('key')
+        print(f'>> The folder "key" created [OK]')
     else:
-        print(f'>> The folder "data/vce" exists [!OK]')
-
-    if not os.path.exists('data/me'):
-        os.makedirs('data/me')
-        print(f'>> The folder "data/me" created [OK]')
-    else:
-        print(f'>> The folder "data/me" exists [!OK]')
-
-
-    if not os.path.exists('data/vce/feature_vectors'):
-        os.makedirs('data/vce/feature_vectors')
-        print(f'>> The folder "data/vce/feature_vectors" created [OK]')
-    else:
-        print(f'>> The folder "data/vce/feature_vectors" exists [!OK]')
-        
-    if not os.path.exists('data/me/feature_vectors'):
-        os.makedirs('data/me/feature_vectors')
-        print(f'>> The folder "data/me/feature_vectors" created [OK]')
-    else:
-        print(f'>> The folder "data/me/feature_vectors" exists [!OK]')
-
+        print(f'>> The folder "key" exists [!OK]')
 
 # copy the folders to the working directory
 def copy_folders(strDir, vceFolder, meFolder):

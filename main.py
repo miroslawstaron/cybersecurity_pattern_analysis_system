@@ -60,6 +60,7 @@ if strModel == 'codex':
                              vceFolder,
                              meFolder, 
                              os.path.join(strWorkDir, 'key/openAI_key.txt'))
+                             
     # calculate the similarity between the analyzed code and the reference code
     calculate_distances_codex(os.path.join(strWorkDir, 'results'))
 
