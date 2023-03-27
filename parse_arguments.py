@@ -40,7 +40,7 @@ def parse_arguments():
                 meFolder = sys.argv[i+1]
             if sys.argv[i] == '-m':
                 strModel = sys.argv[i+1]
-                if strModel != 'ccflex' and strModel != 'codex':
+                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta':
                     print("Wrong model, type -h or --help for help")
                     sys.exit(1)
 

@@ -29,6 +29,10 @@ from analysis import extract_embeddings_ccflex          # extracts the embedding
 from analysis import create_average_embeddings_ccflex   # creates the average embeddings matrix from the embeddings matrix
 from codex_embeddings import extract_embeddings_codex   # extracts the embeddings matrix from the analyzed code
 from analysis import calculate_distances_codex          # calculates the distances between the analyzed code and the reference code
+import time                                             # time library for sleep, only for the demo
+from singberta_embeddings import extract_embeddings_singberta       # extracts the embeddings matrix from the analyzed code using the SingBERTa model
+from singberta_embeddings import calculate_distances_singberta      # calculates the distances between the analyzed code and the reference code using the SingBERTa model
+from singberta_embeddings import analyze_singberta      # analyzes the code using the SingBERTa model
 
 # debug flag, to steer what we actually calculate
 bDebug = True
@@ -77,6 +81,19 @@ if strModel == 'ccflex':
     calculate_distances_ccflex(os.path.join(strWorkDir, 'results'))
     # analyze the distances and print the code
     analyze_ccflex(os.path.join(strWorkDir, 'results'))
+
+if strModel == 'singberta':
+    #extract_embeddings_singberta(os.path.join(strWorkDir, 'results'),
+    #                            vceFolder, 
+    #                            meFolder)
+
+    # calculate the similarity between the analyzed code and the reference code
+    #calculate_distances_singberta(os.path.join(strWorkDir, 'results'))
+
+    # analyze the distances and print the code
+    analyze_singberta(os.path.join(strWorkDir, 'results'))
+
+time.sleep(3)
 
 # end the program, print the end message
 print_end()
