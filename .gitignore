@@ -34,3 +34,4 @@ workdir/results/distances_ref.csv
 workdir/results/distances.csv
 workdir/results/embeddings.csv
 workdir/key/*
+SingletonSSLBERT/*
