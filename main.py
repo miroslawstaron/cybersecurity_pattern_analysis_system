@@ -95,5 +95,8 @@ if strModel == 'singberta':
 
 time.sleep(3)
 
+def r12(sd):
+    return sd-1
+
 # end the program, print the end message
 print_end()
