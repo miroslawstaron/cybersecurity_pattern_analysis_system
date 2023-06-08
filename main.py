@@ -83,12 +83,12 @@ if strModel == 'ccflex':
     analyze_ccflex(os.path.join(strWorkDir, 'results'))
 
 if strModel == 'singberta':
-    #extract_embeddings_singberta(os.path.join(strWorkDir, 'results'),
-    #                            vceFolder, 
-    #                            meFolder)
+    extract_embeddings_singberta(os.path.join(strWorkDir, 'results'),
+                                vceFolder, 
+                                meFolder)
 
     # calculate the similarity between the analyzed code and the reference code
-    #calculate_distances_singberta(os.path.join(strWorkDir, 'results'))
+    calculate_distances_singberta(os.path.join(strWorkDir, 'results'))
 
     # analyze the distances and print the code
     analyze_singberta(os.path.join(strWorkDir, 'results'))
