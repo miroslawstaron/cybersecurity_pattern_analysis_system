@@ -1,4 +1,4 @@
-# Cybersecurity Pattern and Vulnerability Pattern detection
+# Cybersecurity Component Analysis Tool (CCAT)
 
 This program is a pattern detection program that can detect patterns in a text file. It can detect both cybersecurity patterns and vulnerability patterns. 
 
