@@ -16,7 +16,7 @@ def test_check_leap_year():
   assert check_leap_year(2000) == True
   assert check_leap_year(1900) == False
   assert check_leap_year(2004) == False
-  assert check_leap_year(2003) == True
+  assert check_leap_year(2003) == False
   assert check_leap_year(1600) == True
   assert check_leap_year(1700) == False
   assert check_leap_year(0) == True
