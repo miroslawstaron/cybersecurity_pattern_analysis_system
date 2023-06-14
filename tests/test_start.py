@@ -19,7 +19,7 @@ def test_check_leap_year():
   assert check_leap_year(2003) == False
   assert check_leap_year(1600) == True
   assert check_leap_year(1700) == False
-  assert check_leap_year(0) == True
+  assert check_leap_year(0) == True 
   assert check_leap_year(-4) == False
   with pytest.raises(NameError):
     check_leap_year(year) # undefined variable
