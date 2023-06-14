@@ -10,6 +10,7 @@
 
 # This module uses CylBERTa to extract the embeddings from the code
 # the model is trained on the code of WolfSSL and examples of input validation vulnerabilities
+# 
 from transformers import RobertaTokenizer
 from transformers import RobertaConfig
 from transformers import pipeline
