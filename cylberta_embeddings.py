@@ -32,14 +32,14 @@ def extract_embeddings_cylberta(strFolder,
     )
 
     
-    tokenizer = RobertaTokenizer.from_pretrained("/mnt/c/users/miros/documents/code/cybersecurity_pattern_analysis_system/CyLBERT", max_length=512)
+    tokenizer = RobertaTokenizer.from_pretrained("mstaron/CyBERTa", max_length=512)
 
     # create the pipeline, which will extract the embedding vectors
     # the models are already pre-defined, so we do not need to train anything here
     features = pipeline(
         "feature-extraction",
-        model="/mnt/c/users/miros/documents/code/cybersecurity_pattern_analysis_system/CyLBERT",
-        tokenizer="/mnt/c/users/miros/documents/code/cybersecurity_pattern_analysis_system/CyLBERT", 
+        model="mstaron/CyBERTa",
+        tokenizer="mstaron/CyBERTa", 
         return_tensor = False
     )
 

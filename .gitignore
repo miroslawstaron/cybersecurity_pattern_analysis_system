@@ -35,5 +35,6 @@ workdir/results/distances.csv
 workdir/results/embeddings.csv
 workdir/key/*
 SingletonSSLBERT/*
-tests/__pycache__/start.cpython-38.pyc
-tests/__pycache__/test_start.cpython-38-pytest-7.3.1.pyc
+CylBERT/*
+tests/__pycache__/*
+__pycache__/*

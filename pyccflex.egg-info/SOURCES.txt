@@ -1,0 +1,7 @@
+setup.py
+pyccflex.egg-info/PKG-INFO
+pyccflex.egg-info/SOURCES.txt
+pyccflex.egg-info/dependency_links.txt
+pyccflex.egg-info/not-zip-safe
+pyccflex.egg-info/requires.txt
+pyccflex.egg-info/top_level.txt
