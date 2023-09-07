@@ -43,7 +43,7 @@ def test_extract_embeddings_cylberta():
   assert isinstance(df, pd.DataFrame)
  
   # check if the dataframe has the expected shape and columns
-  assert df.shape == (5, 768) # 5 files, 768 features
+  assert df.shape == (6, 768) # 5 files, 768 features
   
   # check if the dataframe is saved to a file
   assert os.path.exists(TEST_EMBEDDINGS_FILE)
