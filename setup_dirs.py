@@ -29,26 +29,22 @@ def create_workdir(strDir):
     if not os.path.exists('logs'):
         os.makedirs('logs')
         print(f'>> The folder "logs" created [OK]')
-    else:
-        print(f'>> The folder "logs" exists [!OK]')
+    
 
     if not os.path.exists('results'):
         os.makedirs('results')
         print(f'>> The folder "results" created [OK]')
-    else:
-        print(f'>> The folder "results" exists [!OK]')
+    
 
     if not os.path.exists('data'):
         os.makedirs('data')
         print(f'>> The folder "data" created [OK]')
-    else:
-        print(f'>> The folder "data" exists [!OK]')
+    
 
     if not os.path.exists('key'):
         os.makedirs('key')
         print(f'>> The folder "key" created [OK]')
-    else:
-        print(f'>> The folder "key" exists [!OK]')
+    
 
 # copy the folders to the working directory
 def copy_folders(strDir, vceFolder, meFolder):

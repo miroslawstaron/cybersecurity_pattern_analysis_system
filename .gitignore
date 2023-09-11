@@ -38,3 +38,9 @@ SingletonSSLBERT/*
 CylBERT/*
 tests/__pycache__/*
 __pycache__/*
+__pycache__/analysis.cpython-38.pyc
+__pycache__/codex_embeddings.cpython-38.pyc
+__pycache__/cylberta_embeddings.cpython-38.pyc
+__pycache__/parse_arguments.cpython-38.pyc
+__pycache__/setup_dirs.cpython-38.pyc
+__pycache__/singberta_embeddings.cpython-38.pyc
