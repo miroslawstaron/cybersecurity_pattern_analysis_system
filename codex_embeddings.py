@@ -13,8 +13,9 @@ import numpy as np
 
 # this function retrieves embeddings from CodeX
 # it is taken as-is from the Embeddings API documentation
-def get_embedding(text, engine="code-search-babbage-code-001"):
+def get_embedding(text, engine="code-search-babbage-code-001", theKey=None):
    text = text.replace("\n", " ")
+   openai.api_key = theKey
    emb = openai.Embedding.create(input = [text], engine=engine)['data'][0]['embedding']
    return emb
 
