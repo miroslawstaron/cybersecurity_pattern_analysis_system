@@ -62,7 +62,7 @@ def extract_embeddings_singberta(strFolder,
     iFiles = 0
 
     for strFile in lstFullPaths:
-        print(f'Processing file {iFiles} of {len(lstFullPaths)} files')
+        print(f'Processing file {iFiles+1} of {len(lstFullPaths)} files')
         iFiles += 1
 
         # read the file from the data directory
@@ -128,8 +128,8 @@ def calculate_distances_singberta(strEmbeddingsFolder):
     # distance calculation   
     print(f'<< Calculating the distances')
 
-    dictReferenceEmbeddings = dfEmbeddings[dfEmbeddings.Modified > 0].to_dict(orient='index')
-    dictCodeEmbeddings = dfEmbeddings[dfEmbeddings.Modified == 0].to_dict(orient='index')
+    dictReferenceEmbeddings = dfEmbeddings[dfEmbeddings.Modified > 0].drop(['Modified'], axis=1).to_dict(orient='index')
+    dictCodeEmbeddings = dfEmbeddings[dfEmbeddings.Modified == 0].drop(['Modified'], axis=1).to_dict(orient='index')
 
     # print(dictCodeEmbeddings)
 
@@ -217,7 +217,7 @@ def analyze_singberta(strEmbeddingsFolder):
                 iVCEs += 1  
     
         # write the verdict
-        strVerdict = 'secure' if iVCEs == 0 else 'vulnerable'  
+        strVerdict = 'secure' if iVCEs > iSCEs else 'vulnerable'  
 
         mName = module.split('/')[-1]
 

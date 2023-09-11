@@ -1,4 +1,3 @@
-#!/bin/python3
 #############################################################
 #
 # Secure design pattern and vulnerabilities detection system
@@ -25,7 +24,7 @@ from setup_dirs import copy_folders                     # copies the folders to 
 from analysis import analyze_ccflex                     # analyzes the code
 from analysis import analyze_codex                      # analyzes the code
 from analysis import calculate_distances_ccflex         # calculates the distances between the analyzed code and the reference code
-from analysis import extract_embeddings_ccflex          # extracts the embeddings matrix from the analyzed code
+from ccflex_embeddings import extract_embeddings_ccflex # extracts the embeddings matrix from the analyzed code
 from analysis import create_average_embeddings_ccflex   # creates the average embeddings matrix from the embeddings matrix
 from codex_embeddings import extract_embeddings_codex   # extracts the embeddings matrix from the analyzed code
 from analysis import calculate_distances_codex          # calculates the distances between the analyzed code and the reference code
@@ -33,13 +32,37 @@ import time                                             # time library for sleep
 from singberta_embeddings import extract_embeddings_singberta       # extracts the embeddings matrix from the analyzed code using the SingBERTa model
 from singberta_embeddings import calculate_distances_singberta      # calculates the distances between the analyzed code and the reference code using the SingBERTa model
 from singberta_embeddings import analyze_singberta      # analyzes the code using the SingBERTa model
+import cylberta_embeddings
+
+# disable all warnings
+import warnings
+warnings.filterwarnings("ignore")
+
+import logging
+logging.captureWarnings(True)
+
+def cylbert_analyze():
+    ''' 
+    This function is used to analyze the code using the CylBERT model.
+    '''
+    cylberta_embeddings.extract_embeddings_cylbert(os.path.join(strWorkDir, 'results'),
+                                vceFolder, 
+                                meFolder)
+
+    # calculate the similarity between the analyzed code and the reference code
+    cylberta_embeddings.calculate_distances_cylbert(os.path.join(strWorkDir, 'results'))
+
+    # analyze the distances and print the code
+    cylberta_embeddings.analyze_cylbert(os.path.join(strWorkDir, 'results'))
+
 
 # debug flag, to steer what we actually calculate
-bDebug = True
+bDebug = False
 
 # configuration parameters
 # working directory
-strWorkDir = '/mnt/c/Users/miros/Documents/Code/cybersecurity_pattern_analysis_system/workdir'                                  
+currentDir = os.getcwd()
+strWorkDir = os.path.join(currentDir, 'workdir')
 
 # print the welcome message
 print_header()
@@ -51,6 +74,8 @@ print_header()
 # if the folders are empty, then we exit
 # and that is handled by the parse_arguments function
 meFolder, vceFolder, strModel = parse_arguments()
+
+print(meFolder, vceFolder, strModel)    
 
 # check if the folders exist and if they are not empty
 check_folders(meFolder, vceFolder)
@@ -73,10 +98,16 @@ if strModel == 'codex':
 
 # create the feature vectors for the analyzed code
 if strModel == 'ccflex':
+
     extract_embeddings_ccflex(os.path.join(strWorkDir, 'results'), 
-                              vceFolder)
+                              vceFolder, 
+                              meFolder, 
+                              manual_vocab = ['main', 'string', 'int'],
+                              bow_vocab_size = 100)
+    
     # CCFlex creates embeddings for each line, so we need to create the average embeddings
     create_average_embeddings_ccflex(os.path.join(strWorkDir, 'results'))
+
     # calculate the similarity between the analyzed code and the reference code
     calculate_distances_ccflex(os.path.join(strWorkDir, 'results'))
     # analyze the distances and print the code
@@ -92,6 +123,9 @@ if strModel == 'singberta':
 
     # analyze the distances and print the code
     analyze_singberta(os.path.join(strWorkDir, 'results'))
+
+if strModel == 'cylbert':
+    cylbert_analyze()
 
 time.sleep(3)
 

@@ -10,6 +10,9 @@ To use the program, you need to provide the program with two arguments:
 
 Typing '-h' or '--help' will display the help menu.
 
+## Example
+The directory test_code contains the code for testing of the tool, which can be added as -vce and -me arguments.
+
 ## Basics
 The software uses programming language models to transform each module into an embedding vector and compares the vectors. The comparison is done based on the distances between the modules and the reference code. 
 
