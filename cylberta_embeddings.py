@@ -165,7 +165,7 @@ def calculate_distances_cylbert(strEmbeddingsFolder):
     return dfDistances
 
 # method to check if a module is secure or not
-def analyze_cylbert(strEmbeddingsFolder):
+def analyze_cylbert(strEmbeddingsFolder, csvFile):
     
     ''' Analyzes the code and prints the results. The input is the list of distances
         between the analyzed code and the reference code. The output is the verdict
@@ -233,5 +233,9 @@ def analyze_cylbert(strEmbeddingsFolder):
             for label in dfModuleLabels:
                 if 'VCE_' in label:
                     print(f'>>>> {label.split("/")[-1]}')
+
+        # save the results to the csvFile file
+        with open(csvFile, 'a') as f:
+            f.write(f'{mName},{strVerdict}\n')
 
     return 1

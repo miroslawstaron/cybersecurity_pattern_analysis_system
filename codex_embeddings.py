@@ -75,7 +75,7 @@ def extract_embeddings_codex(strEmbeddingsFolder,
                 print(f'Processed {iLines} lines of {len(lstLines)} of file {iFiles} of {len(lstFiles)} files')
 
             # extract the features == embeddings
-            lstEmbedding = get_embedding(strLine)
+            lstEmbedding = get_embedding(strLine, theKey=theKey)
 
             # store the embedding in the dictionary
             dictEmbeddings[strLine] = lstEmbedding
