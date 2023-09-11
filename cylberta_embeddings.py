@@ -19,7 +19,7 @@ import pandas as pd
 import os
 from scipy import spatial
 
-def extract_embeddings_cylberta(strFolder, 
+def extract_embeddings_cylbert(strFolder, 
                                  strCodeFolder, 
                                  strReferenceFolder):
 
@@ -63,7 +63,7 @@ def extract_embeddings_cylberta(strFolder,
     iFiles = 0
 
     for strFile in lstFullPaths:
-        print(f'Processing file {iFiles} of {len(lstFullPaths)} files')
+        print(f'Processing file {iFiles+1} of {len(lstFullPaths)} files')
         iFiles += 1
 
         # read the file from the data directory
@@ -105,7 +105,7 @@ def extract_embeddings_cylberta(strFolder,
 
     return dfEmbeddingFile
 
-def calculate_distances_cylberta(strEmbeddingsFolder):
+def calculate_distances_cylbert(strEmbeddingsFolder):
     ''' Takes the embeddings matrix as input per module and calculates the distances
         between the analyzed code and the reference code. The output is a dataframe
         with the distances between the analyzed code and the reference code. '''
@@ -129,8 +129,8 @@ def calculate_distances_cylberta(strEmbeddingsFolder):
     # distance calculation   
     print(f'<< Calculating the distances')
 
-    dictReferenceEmbeddings = dfEmbeddings[dfEmbeddings.Modified > 0].to_dict(orient='index')
-    dictCodeEmbeddings = dfEmbeddings[dfEmbeddings.Modified == 0].to_dict(orient='index')
+    dictReferenceEmbeddings = dfEmbeddings[dfEmbeddings.Modified > 0].drop(['Modified'], axis=1).to_dict(orient='index')
+    dictCodeEmbeddings = dfEmbeddings[dfEmbeddings.Modified == 0].drop(['Modified'], axis=1).to_dict(orient='index')
 
     # print(dictCodeEmbeddings)
 
@@ -165,7 +165,7 @@ def calculate_distances_cylberta(strEmbeddingsFolder):
     return dfDistances
 
 # method to check if a module is secure or not
-def analyze_cylberta(strEmbeddingsFolder):
+def analyze_cylbert(strEmbeddingsFolder):
     
     ''' Analyzes the code and prints the results. The input is the list of distances
         between the analyzed code and the reference code. The output is the verdict
@@ -218,7 +218,7 @@ def analyze_cylberta(strEmbeddingsFolder):
                 iVCEs += 1  
     
         # write the verdict
-        strVerdict = 'secure' if iVCEs == 0 else 'vulnerable'  
+        strVerdict = 'secure' if iVCEs > iSCEs else 'vulnerable'  
 
         mName = module.split('/')[-1]
 

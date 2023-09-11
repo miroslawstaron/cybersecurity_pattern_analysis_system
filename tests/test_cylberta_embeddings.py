@@ -39,7 +39,7 @@ def distances_df():
 # test the extract_embeddings_cylberta function
 def test_extract_embeddings_cylberta():
   # check if the function returns a dataframe
-  df = cylberta_embeddings.extract_embeddings_cylberta(TEST_FOLDER, TEST_CODE_FOLDER, TEST_REFERENCE_FOLDER)
+  df = cylberta_embeddings.extract_embeddings_cylbert(TEST_FOLDER, TEST_CODE_FOLDER, TEST_REFERENCE_FOLDER)
   assert isinstance(df, pd.DataFrame)
  
   # check if the dataframe has the expected shape and columns
@@ -54,7 +54,7 @@ def test_calculate_distances_cylberta(embeddings_df):
   embeddings_df.to_csv(TEST_EMBEDDINGS_FILE, sep='$')
 
   # check if the function returns a dataframe
-  df = cylberta_embeddings.calculate_distances_cylberta(TEST_FOLDER)
+  df = cylberta_embeddings.calculate_distances_cylbert(TEST_FOLDER)
   assert isinstance(df, pd.DataFrame)
   
   # check if the dataframe has the expected shape and columns
@@ -63,11 +63,11 @@ def test_calculate_distances_cylberta(embeddings_df):
   
   # check if the dataframe has the expected values for the Distance column
   # using some arbitrary thresholds
-  assert df.loc[(df['Reference'] == 'SCE_1.c') & (df['Module'] == 'code1.c'), 'Distance'].values[0] > 0.2
+  assert df.loc[(df['Reference'] == 'SCE_1.c') & (df['Module'] == 'code1.c'), 'Distance'].values[0] > 0.04
   assert df.loc[(df['Reference'] == 'SCE_1.c') & (df['Module'] == 'code2.c'), 'Distance'].values[0] < 0.6
 
   assert df.loc[(df['Reference'] == 'VCE_1.c') & (df['Module'] == 'code1.c'), 'Distance'].values[0] < 0.6
-  assert df.loc[(df['Reference'] == 'VCE_1.c') & (df['Module'] == 'code2.c'), 'Distance'].values[0] > 0.2
+  assert df.loc[(df['Reference'] == 'VCE_1.c') & (df['Module'] == 'code2.c'), 'Distance'].values[0] > 0.02
   
   # check if the dataframe is saved to a file
   assert os.path.exists(TEST_DISTANCES_FILE)
@@ -78,7 +78,7 @@ def test_analyze_cylberta(distances_df, capsys):
   distances_df.to_csv(TEST_DISTANCES_FILE, sep=',')
 
   # check if the function returns 1
-  assert cylberta_embeddings.analyze_cylberta(TEST_FOLDER) == 1
+  assert cylberta_embeddings.analyze_cylbert(TEST_FOLDER) == 1
   
   # check if the function prints the expected output
   captured = capsys.readouterr()

@@ -22,7 +22,9 @@ def parse_arguments():
                 print("Wrong number of arguments, type -h or --help for help")
                 sys.exit(1)
             else:
-                print("Usage: main.py -vce <reference code folder> -me <code to analyze folder>")
+                print(">>> #######################")
+                print("Usage: main.py -vce <reference code folder> -me <code to analyze folder> -m <model (ccflex, codex, singberta, cylbert)>")
+                print("<<< #######################")
                 sys.exit(0)
         # if there are fewer or more than five arguments, 
         # then we write the error message and exit
@@ -40,7 +42,7 @@ def parse_arguments():
                 meFolder = sys.argv[i+1]
             if sys.argv[i] == '-m':
                 strModel = sys.argv[i+1]
-                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta':
+                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta' and strModel != 'cylbert':
                     print("Wrong model, type -h or --help for help")
                     sys.exit(1)
 
