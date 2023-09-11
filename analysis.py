@@ -13,15 +13,7 @@ import numpy as np
 import pandas as pd
 import os
 from scipy import spatial
-#from prepare.case_extractors import LinesCaseExtractor
-#from prepare.vocabularies import VocabularyExtractor, code_stop_words_tokenizer, token_signature
 from sklearn.feature_extraction.text import CountVectorizer
-#from prepare.feature_extractors import SubstringCountingFeatureExtraction, WholeWordCountingFeatureExtraction, \
-#    LineFeaturesExtractionController, CommentFeatureExtraction, WordCountFeatureExtraction, CharCountFeatureExtraction, \
-#    WholeLineCommentFeatureExtraction, BlankLineFeatureExtraction, PythonWholeLineCommentFeatureExtraction, \
-#    RegexpCountingFeatureExtraction, TokenizedWholeWordCountingFeatureExtraction
-
-#from prepare.feature_extractors import CountVectorizerBasedFeatureExtraction
 
 import json
 import csv
@@ -177,7 +169,7 @@ def calculate_distances_ccflex(strEmbeddingsFolder):
 
 
 # method to check if a module is secure or not
-def analyze_codex(strEmbeddingsFolder):
+def analyze_codex(strEmbeddingsFolder, csvFile):
     
     ''' Analyzes the code and prints the results. The input is the list of distances
         between the analyzed code and the reference code. The output is the verdict
@@ -245,6 +237,10 @@ def analyze_codex(strEmbeddingsFolder):
                 labelName = label.split('/')[-1]
                 if labelName.startswith('VCE'):
                     print(f'>>>> {labelName}')
+
+        # save the results to the csvFile file
+        with open(csvFile, 'w') as f:
+            f.write(f'{mName},{strVerdict}\n')
 
     return 1
 
@@ -318,6 +314,9 @@ def analyze_ccflex(strEmbeddingsFolder):
             for label in dfModuleLabels:
                 if label.startswith('VCE'):
                     print(f'>>>> {label}')
-            
+
+        # save the results to the csvFile file
+        with open(csvFile, 'a') as f:
+            f.write(f'{mName},{strVerdict}\n')    
 
     return 1

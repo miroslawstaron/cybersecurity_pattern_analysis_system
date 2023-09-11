@@ -53,7 +53,8 @@ def cylbert_analyze():
     cylberta_embeddings.calculate_distances_cylbert(os.path.join(strWorkDir, 'results'))
 
     # analyze the distances and print the code
-    cylberta_embeddings.analyze_cylbert(os.path.join(strWorkDir, 'results'))
+    cylberta_embeddings.analyze_cylbert(os.path.join(strWorkDir, 'results'), 
+                                        csvFile)
 
 
 # debug flag, to steer what we actually calculate
@@ -73,7 +74,7 @@ print_header()
 # 
 # if the folders are empty, then we exit
 # and that is handled by the parse_arguments function
-meFolder, vceFolder, strModel = parse_arguments()
+meFolder, vceFolder, strModel, csvFile = parse_arguments()
 
 print(meFolder, vceFolder, strModel)    
 
@@ -94,7 +95,7 @@ if strModel == 'codex':
     calculate_distances_codex(os.path.join(strWorkDir, 'results'))
 
     # analyze the distances and print the code
-    analyze_codex(os.path.join(strWorkDir, 'results'))
+    analyze_codex(os.path.join(strWorkDir, 'results'), csvFile)
 
 # create the feature vectors for the analyzed code
 if strModel == 'ccflex':
@@ -122,7 +123,7 @@ if strModel == 'singberta':
     calculate_distances_singberta(os.path.join(strWorkDir, 'results'))
 
     # analyze the distances and print the code
-    analyze_singberta(os.path.join(strWorkDir, 'results'))
+    analyze_singberta(os.path.join(strWorkDir, 'results'), csvFile)
 
 if strModel == 'cylbert':
     cylbert_analyze()

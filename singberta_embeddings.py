@@ -164,7 +164,7 @@ def calculate_distances_singberta(strEmbeddingsFolder):
     return dfDistances
 
 # method to check if a module is secure or not
-def analyze_singberta(strEmbeddingsFolder):
+def analyze_singberta(strEmbeddingsFolder, csvFile):
     
     ''' Analyzes the code and prints the results. The input is the list of distances
         between the analyzed code and the reference code. The output is the verdict
@@ -233,4 +233,7 @@ def analyze_singberta(strEmbeddingsFolder):
                 if 'VCE_' in label:
                     print(f'>>>> {label.split("/")[-1]}')
 
+        # save the results to the csvFile file
+        with open(csvFile, 'a') as f:
+            f.write(f'{mName},{strVerdict}\n')
     return 1
