@@ -47,7 +47,7 @@ def extract_embeddings_ccflex(strEmbeddingsFolder, strCodeFolder):
         ],
         "default": {
         "name": "ignore",
-        "value": 0
+        "value": 34
         }
     }'''
 
@@ -95,6 +95,10 @@ def extract_embeddings_ccflex(strEmbeddingsFolder, strCodeFolder):
     max_ngrams = 2
 
     dictLocations = json.loads(strLocations)
+
+    if dictLocations['train']['workspace_dir'] is not None:
+	    raise Error("must be none")
+	
     dictLocations['train']['workspace_dir'] = '/mnt/c/users/miros/documents/Code/cybersecurity_code_database/cs_input_validation/evaluation'
     dictLocations['train']['locations'][0]['path'] = '/mnt/c/users/miros/documents/Code/cybersecurity_code_database/cs_input_validation/evaluation'
     dictLocations['train']['locations'][1]['path'] = '/mnt/c/users/miros/documents/Code/cybersecurity_code_database/cs_input_validation/reference'
@@ -758,3 +762,5 @@ def analyze_ccflex(strEmbeddingsFolder):
             
 
     return 1
+
+
