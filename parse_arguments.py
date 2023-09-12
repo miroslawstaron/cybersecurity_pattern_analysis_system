@@ -9,9 +9,14 @@
 
 # imports
 import sys
+import os
 
 # parsing the arguments
 def parse_arguments():
+
+    # define the default csv file variable
+    csvFile = os.path.join(os.getcwd(), 'workdir/results.csv')
+
     print('<< Parsing the arguments')
     # check the number of arguments
     if len(sys.argv) != 7:
@@ -22,7 +27,9 @@ def parse_arguments():
                 print("Wrong number of arguments, type -h or --help for help")
                 sys.exit(1)
             else:
-                print("Usage: main.py -vce <reference code folder> -me <code to analyze folder>")
+                print(">>> #######################")
+                print("Usage: main.py -vce <reference code folder> -me <code to analyze folder> -m <model (ccflex, codex, singberta, cylbert, codebert)> -csv name.csv")
+                print("<<< #######################")
                 sys.exit(0)
         # if there are fewer or more than five arguments, 
         # then we write the error message and exit
@@ -40,14 +47,17 @@ def parse_arguments():
                 meFolder = sys.argv[i+1]
             if sys.argv[i] == '-m':
                 strModel = sys.argv[i+1]
-                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta':
+                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta' and strModel != 'cylbert' and strModel != 'codebert':
                     print("Wrong model, type -h or --help for help")
                     sys.exit(1)
+            if sys.argv[i] == '-csv':
+                csvFile = sys.argv[i+1]
 
         # print the configuration arguments
         print(f'>> VCE folder is: {vceFolder}')
         print(f'>> ME folder is: {meFolder}')
         print(f'>> Model is: {strModel}')
+        print(f'>> CSV file is: {csvFile}')
     
     # return the parsed folders
-    return vceFolder, meFolder, strModel
+    return vceFolder, meFolder, strModel, csvFile

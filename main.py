@@ -1,4 +1,3 @@
-#!/bin/python3
 #############################################################
 #
 # Secure design pattern and vulnerabilities detection system
@@ -25,7 +24,7 @@ from setup_dirs import copy_folders                     # copies the folders to 
 from analysis import analyze_ccflex                     # analyzes the code
 from analysis import analyze_codex                      # analyzes the code
 from analysis import calculate_distances_ccflex         # calculates the distances between the analyzed code and the reference code
-from analysis import extract_embeddings_ccflex          # extracts the embeddings matrix from the analyzed code
+from ccflex_embeddings import extract_embeddings_ccflex # extracts the embeddings matrix from the analyzed code
 from analysis import create_average_embeddings_ccflex   # creates the average embeddings matrix from the embeddings matrix
 from codex_embeddings import extract_embeddings_codex   # extracts the embeddings matrix from the analyzed code
 from analysis import calculate_distances_codex          # calculates the distances between the analyzed code and the reference code
@@ -33,13 +32,56 @@ import time                                             # time library for sleep
 from singberta_embeddings import extract_embeddings_singberta       # extracts the embeddings matrix from the analyzed code using the SingBERTa model
 from singberta_embeddings import calculate_distances_singberta      # calculates the distances between the analyzed code and the reference code using the SingBERTa model
 from singberta_embeddings import analyze_singberta      # analyzes the code using the SingBERTa model
+import cylberta_embeddings
+import codebert_embeddings
+import analysis
+import single_file_pipeline
 
+# disable all warnings
+import warnings
+warnings.filterwarnings("ignore")
+
+import logging
+logging.captureWarnings(True)
+
+def cylbert_analyze():
+    ''' 
+    This function is used to analyze the code using the CylBERT model.
+    '''
+    cylberta_embeddings.extract_embeddings_cylbert(os.path.join(strWorkDir, 'results'),
+                                vceFolder, 
+                                meFolder)
+
+    # calculate the similarity between the analyzed code and the reference code
+    cylberta_embeddings.calculate_distances_cylbert(os.path.join(strWorkDir, 'results'))
+
+    # analyze the distances and print the code
+    cylberta_embeddings.analyze_cylbert(os.path.join(strWorkDir, 'results'), 
+                                        csvFile)
+
+def codebert_analyze():
+    ''' 
+    This function is used to analyze the code using the CylBERT model.
+    '''
+    codebert_embeddings.extract_embeddings_codebert(os.path.join(strWorkDir, 'results'),
+                                vceFolder, 
+                                meFolder)
+
+    # calculate the similarity between the analyzed code and the reference code
+    analysis.calculate_distances(os.path.join(strWorkDir, 'results/embeddings_codebert.csv'), 
+                                 os.path.join(strWorkDir, 'results'))
+
+    # analyze the distances and print the code
+    analysis.analyze(os.path.join(strWorkDir, 'results/distances_codebert.csv'),
+                    csvFile)
+    
 # debug flag, to steer what we actually calculate
-bDebug = True
+bDebug = False
 
 # configuration parameters
 # working directory
-strWorkDir = '/mnt/c/Users/miros/Documents/Code/cybersecurity_pattern_analysis_system/workdir'                                  
+currentDir = os.getcwd()
+strWorkDir = os.path.join(currentDir, 'workdir')
 
 # print the welcome message
 print_header()
@@ -50,7 +92,7 @@ print_header()
 # 
 # if the folders are empty, then we exit
 # and that is handled by the parse_arguments function
-meFolder, vceFolder, strModel = parse_arguments()
+vceFolder, meFolder, strModel, csvFile = parse_arguments()
 
 # check if the folders exist and if they are not empty
 check_folders(meFolder, vceFolder)
@@ -60,39 +102,63 @@ create_workdir(strWorkDir)
 
 # extract embeddings from CodeX
 if strModel == 'codex':
-    extract_embeddings_codex(os.path.join(strWorkDir, 'results'), 
-                             vceFolder,
-                             meFolder, 
-                             os.path.join(strWorkDir, 'key/openAI_key.txt'))
+    single_file_pipeline.pipeline_codex(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result_codex.csv'),
+                                strWorkDir,  
+                                os.path.join(strWorkDir, 'key/openAI_key.txt'))
+    
+    #extract_embeddings_codex(os.path.join(strWorkDir, 'results'), 
+    #                         vceFolder,
+    #                         meFolder, 
+    #                         os.path.join(strWorkDir, 'key/openAI_key.txt'))
                              
     # calculate the similarity between the analyzed code and the reference code
-    calculate_distances_codex(os.path.join(strWorkDir, 'results'))
+    #calculate_distances_codex(os.path.join(strWorkDir, 'results'))
 
     # analyze the distances and print the code
-    analyze_codex(os.path.join(strWorkDir, 'results'))
+    #analyze_codex(os.path.join(strWorkDir, 'results'), csvFile)
 
 # create the feature vectors for the analyzed code
 if strModel == 'ccflex':
+
     extract_embeddings_ccflex(os.path.join(strWorkDir, 'results'), 
-                              vceFolder)
+                              vceFolder, 
+                              meFolder, 
+                              manual_vocab = ['main', 'string', 'int'],
+                              bow_vocab_size = 100)
+    
     # CCFlex creates embeddings for each line, so we need to create the average embeddings
     create_average_embeddings_ccflex(os.path.join(strWorkDir, 'results'))
+
     # calculate the similarity between the analyzed code and the reference code
     calculate_distances_ccflex(os.path.join(strWorkDir, 'results'))
     # analyze the distances and print the code
     analyze_ccflex(os.path.join(strWorkDir, 'results'))
 
 if strModel == 'singberta':
-    extract_embeddings_singberta(os.path.join(strWorkDir, 'results'),
-                                vceFolder, 
-                                meFolder)
+    single_file_pipeline.pipeline(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result.csv'),
+                                strWorkDir, 
+                                'singberta')
 
-    # calculate the similarity between the analyzed code and the reference code
-    calculate_distances_singberta(os.path.join(strWorkDir, 'results'))
+if strModel == 'cylbert':
+    #cylbert_analyze()
+    single_file_pipeline.pipeline(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result.csv'), 
+                                strWorkDir,
+                                'cylbert')
 
-    # analyze the distances and print the code
-    analyze_singberta(os.path.join(strWorkDir, 'results'))
-
+if strModel == 'codebert':
+    #codebert_analyze()
+    single_file_pipeline.pipeline(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result.csv'), 
+                                strWorkDir,
+                                'codebert')
+    
 time.sleep(3)
 
 # end the program, print the end message

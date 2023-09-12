@@ -6,26 +6,33 @@
 # www.staron.nu
 #
 #############################################################
-import os
-import openai
-import pandas as pd
-import numpy as np
 
-# this function retrieves embeddings from CodeX
-# it is taken as-is from the Embeddings API documentation
-def get_embedding(text, engine="code-search-babbage-code-001", theKey=None):
-   text = text.replace("\n", " ")
-   openai.api_key = theKey
-   emb = openai.Embedding.create(input = [text], engine=engine)['data'][0]['embedding']
-   return emb
+#
+# This file includes functions to extract embeddings from any model from HuggingFace
+# The model needs to have the "feature-extraction" pipeline
+# and needs to be publicly available
+
+# import libraries needed for the system
+from transformers import RobertaTokenizer
+from transformers import RobertaConfig
+from transformers import pipeline
+import numpy as np
+import pandas as pd
+import os
+from scipy import spatial
 
 # extract embeddings from one file only
-def extract_embeddings_codex_one_file(strFile, strCodeXKeyFile):
-    with open(strCodeXKeyFile, 'r') as fKey:
-        theKey = fKey.readline()
+def extract_embeddings_codebert_one_file(strFile):
+    tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base", max_length=512)
 
-    # Load your API key from an environment variable or secret management service
-    openai.api_key = theKey
+    # create the pipeline, which will extract the embedding vectors
+    # the models are already pre-defined, so we do not need to train anything here
+    features = pipeline(
+        "feature-extraction",
+        model="microsoft/codebert-base",
+        tokenizer="microsoft/codebert-base", 
+        return_tensor = False
+    )
 
     # read the file from the data directory
     with open(strFile, 'r') as f:
@@ -45,11 +52,16 @@ def extract_embeddings_codex_one_file(strFile, strCodeXKeyFile):
             print(f'Processed {iLines} lines of {len(lstLines)} of file {strFile}')
 
         # extract the features == embeddings
-        lstEmbedding = get_embedding(strLine, theKey=theKey)
+        lstFeatures = features(strLine)
+
+        # get the embedding of the first token [CLS]
+        # which is also a good approximation of the whole sentence embedding
+        # the same as using np.mean(lstFeatures[0], axis=0)
+        lstEmbedding = lstFeatures[0][0]
 
         # store the embedding in the dictionary
         dictEmbeddings[strLine] = lstEmbedding
-
+    
     dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
     lstEmbeddings = np.mean(dfEmbeddings.values, axis=0)
 
@@ -57,13 +69,18 @@ def extract_embeddings_codex_one_file(strFile, strCodeXKeyFile):
     return lstEmbeddings
 
 # extract embeddings from the entire folder structure
-def extract_embeddings_codex_dict(strFolder,strCodeXKeyFile):
+def extract_embeddings_codebert_dict(strFolder):
 
-    with open(strCodeXKeyFile, 'r') as fKey:
-        theKey = fKey.readline()
+    tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base", max_length=512)
 
-    # Load your API key from an environment variable or secret management service
-    openai.api_key = theKey
+    # create the pipeline, which will extract the embedding vectors
+    # the models are already pre-defined, so we do not need to train anything here
+    features = pipeline(
+        "feature-extraction",
+        model="microsoft/codebert-base",
+        tokenizer="microsoft/codebert-base", 
+        return_tensor = False
+    )
     
     lstFullPaths = []
 
@@ -100,10 +117,15 @@ def extract_embeddings_codex_dict(strFolder,strCodeXKeyFile):
             # print the progress
             iLines += 1
             if iLines % 1000 == 0:
-                print(f'Processed {iLines} lines of {len(lstLines)} of file {strFile}')
+                print(f'Processed {iLines} lines of {len(lstLines)} of file {iFiles} of {len(lstFullPaths)} files')
 
             # extract the features == embeddings
-            lstEmbedding = get_embedding(strLine, theKey=theKey)
+            lstFeatures = features(strLine)
+
+            # get the embedding of the first token [CLS]
+            # which is also a good approximation of the whole sentence embedding
+            # the same as using np.mean(lstFeatures[0], axis=0)
+            lstEmbedding = lstFeatures[0][0]
 
             # store the embedding in the dictionary
             dictEmbeddings[strLine] = lstEmbedding
@@ -114,20 +136,21 @@ def extract_embeddings_codex_dict(strFolder,strCodeXKeyFile):
 
     return dictEmbeddingsFiles
 
-def extract_embeddings_codex(strEmbeddingsFolder,                              
-                             strReferenceCodeFolder, 
-                             strCodeFolder, 
-                             strCodeXKeyFile):
-    with open(strCodeXKeyFile, 'r') as fKey:
-        theKey = fKey.readline()
+def extract_embeddings_codebert(strFolder, 
+                                strCodeFolder, 
+                                strReferenceFolder):
 
-    dictEmbeddingsFiles = {}
+    tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base", max_length=512)
 
-    # Load your API key from an environment variable or secret management service
-    openai.api_key = theKey
+    # create the pipeline, which will extract the embedding vectors
+    # the models are already pre-defined, so we do not need to train anything here
+    features = pipeline(
+        "feature-extraction",
+        model="microsoft/codebert-base",
+        tokenizer="microsoft/codebert-base", 
+        return_tensor = False
+    )
 
-    # get the list of files from the strCodeFolder
-    # and iterate over them
     # get all files in the folder
     lstFiles = os.listdir(strCodeFolder)
 
@@ -136,10 +159,10 @@ def extract_embeddings_codex(strEmbeddingsFolder,
     for strFile in lstFiles:
         lstFullPaths.append(os.path.join(strCodeFolder, strFile))
 
-    lstReference = os.listdir(strReferenceCodeFolder)
+    lstReference = os.listdir(strReferenceFolder)
 
     for strFile in lstReference:
-        lstFullPaths.append(os.path.join(strReferenceCodeFolder, strFile))
+        lstFullPaths.append(os.path.join(strReferenceFolder, strFile))
 
     # now go through all the files and extract embeddings
     dictEmbeddingsFiles = {}
@@ -169,7 +192,12 @@ def extract_embeddings_codex(strEmbeddingsFolder,
                 print(f'Processed {iLines} lines of {len(lstLines)} of file {iFiles} of {len(lstFiles)} files')
 
             # extract the features == embeddings
-            lstEmbedding = get_embedding(strLine, theKey=theKey)
+            lstFeatures = features(strLine)
+
+            # get the embedding of the first token [CLS]
+            # which is also a good approximation of the whole sentence embedding
+            # the same as using np.mean(lstFeatures[0], axis=0)
+            lstEmbedding = lstFeatures[0][0]
 
             # store the embedding in the dictionary
             dictEmbeddings[strLine] = lstEmbedding
@@ -178,22 +206,9 @@ def extract_embeddings_codex(strEmbeddingsFolder,
         lstEmbedding = np.mean(dfEmbeddings.values, axis=0)
         dictEmbeddingsFiles[strFile] = lstEmbedding
 
-    
-    print('<< Extracting embeddings from CodeX... done')
-
-    print('<< Saving embeddings to a file')
-
     dfEmbeddingFile = pd.DataFrame.from_dict(dictEmbeddingsFiles, orient='index')
 
-    print("Shape of the embeddings file")
-    print(dfEmbeddingFile.shape)
-
     # save the embeddings to a file
-    strFileName = os.path.join(strEmbeddingsFolder, 'embeddings_codex.csv')
-    print(f'Saving embeddings to {strFileName}')
-
-    dfEmbeddingFile.to_csv(strFileName, sep='$')
+    dfEmbeddingFile.to_csv(os.path.join(strFolder, './embeddings_codebert.csv'), sep='$')
 
     return dfEmbeddingFile
-
-        
