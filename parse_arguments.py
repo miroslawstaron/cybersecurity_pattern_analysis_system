@@ -28,7 +28,7 @@ def parse_arguments():
                 sys.exit(1)
             else:
                 print(">>> #######################")
-                print("Usage: main.py -vce <reference code folder> -me <code to analyze folder> -m <model (ccflex, codex, singberta, cylbert)> -csv name.csv")
+                print("Usage: main.py -vce <reference code folder> -me <code to analyze folder> -m <model (ccflex, codex, singberta, cylbert, codebert)> -csv name.csv")
                 print("<<< #######################")
                 sys.exit(0)
         # if there are fewer or more than five arguments, 
@@ -47,7 +47,7 @@ def parse_arguments():
                 meFolder = sys.argv[i+1]
             if sys.argv[i] == '-m':
                 strModel = sys.argv[i+1]
-                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta' and strModel != 'cylbert':
+                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta' and strModel != 'cylbert' and strModel != 'codebert':
                     print("Wrong model, type -h or --help for help")
                     sys.exit(1)
             if sys.argv[i] == '-csv':

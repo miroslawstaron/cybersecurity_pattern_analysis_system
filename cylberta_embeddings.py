@@ -19,9 +19,142 @@ import pandas as pd
 import os
 from scipy import spatial
 
+# extract embeddings from one file only
+def extract_embeddings_cylbert_one_file(strFile):
+    config = RobertaConfig(
+        vocab_size=52_000,
+        max_position_embeddings=514,
+        num_attention_heads=12,
+        num_hidden_layers=6,
+        type_vocab_size=1,
+    )
+    
+    tokenizer = RobertaTokenizer.from_pretrained("mstaron/CyBERTa", max_length=512)
+
+    # create the pipeline, which will extract the embedding vectors
+    # the models are already pre-defined, so we do not need to train anything here
+    features = pipeline(
+        "feature-extraction",
+        model="mstaron/CyBERTa",
+        tokenizer="mstaron/CyBERTa", 
+        return_tensor = False
+    )
+
+    # read the file from the data directory
+    with open(strFile, 'r') as f:
+        lstLines = f.readlines()
+
+    # now go through all the lines and extract embeddings
+    dictEmbeddings = {}
+
+    # counter of the lines
+    iLines = 0
+
+    for strLine in lstLines:
+
+        # print the progress
+        iLines += 1
+        if iLines % 1000 == 0:
+            print(f'Processed {iLines} lines of {len(lstLines)} of file {strFile}')
+
+        # extract the features == embeddings
+        lstFeatures = features(strLine)
+
+        # get the embedding of the first token [CLS]
+        # which is also a good approximation of the whole sentence embedding
+        # the same as using np.mean(lstFeatures[0], axis=0)
+        lstEmbedding = lstFeatures[0][0]
+
+        # store the embedding in the dictionary
+        dictEmbeddings[strLine] = lstEmbedding
+    
+    dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
+    lstEmbeddings = np.mean(dfEmbeddings.values, axis=0)
+
+    # we return the list of embeddings for the file
+    return lstEmbeddings
+
+# extract embeddings from the entire folder structure
+def extract_embeddings_cylbert_dict(strFolder):
+
+    config = RobertaConfig(
+        vocab_size=52_000,
+        max_position_embeddings=514,
+        num_attention_heads=12,
+        num_hidden_layers=6,
+        type_vocab_size=1,
+    )
+
+    tokenizer = RobertaTokenizer.from_pretrained("mstaron/CyBERTa", max_length=512)
+
+    # create the pipeline, which will extract the embedding vectors
+    # the models are already pre-defined, so we do not need to train anything here
+    features = pipeline(
+        "feature-extraction",
+        model="mstaron/CyBERTa",
+        tokenizer="mstaron/CyBERTa", 
+        return_tensor = False
+    )
+    
+    lstFullPaths = []
+
+    if strFolder != '':
+        lstReference = os.listdir(strFolder)
+    else:
+        lstReference = []
+
+    for strFile in lstReference:
+        lstFullPaths.append(os.path.join(strFolder, strFile))
+
+    # now go through all the files and extract embeddings
+    dictEmbeddingsFiles = {}
+
+    # counter of the files
+    iFiles = 0
+
+    for strFile in lstFullPaths:
+        print(f'Processing file {iFiles+1} of {len(lstFullPaths)} files')
+        iFiles += 1
+
+        # read the file from the data directory
+        with open(strFile, 'r') as f:
+            lstLines = f.readlines()
+
+        # now go through all the lines and extract embeddings
+        dictEmbeddings = {}
+
+        # counter of the lines
+        iLines = 0
+
+        for strLine in lstLines:
+
+            # print the progress
+            iLines += 1
+            if iLines % 1000 == 0:
+                print(f'Processed {iLines} lines of {len(lstLines)} of file {iFiles} of {len(lstFullPaths)} files')
+
+            # extract the features == embeddings
+            lstFeatures = features(strLine)
+
+            # get the embedding of the first token [CLS]
+            # which is also a good approximation of the whole sentence embedding
+            # the same as using np.mean(lstFeatures[0], axis=0)
+            lstEmbedding = lstFeatures[0][0]
+
+            # store the embedding in the dictionary
+            dictEmbeddings[strLine] = lstEmbedding
+        
+        dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
+        lstEmbedding = np.mean(dfEmbeddings.values, axis=0)
+        dictEmbeddingsFiles[strFile] = lstEmbedding
+
+    return dictEmbeddingsFiles
+
+
+# extract embeddings from the entire folder structure
 def extract_embeddings_cylbert(strFolder, 
-                                 strCodeFolder, 
-                                 strReferenceFolder):
+                               strCodeFolder, 
+                               strReferenceFolder):
 
     config = RobertaConfig(
         vocab_size=52_000,
@@ -44,14 +177,20 @@ def extract_embeddings_cylbert(strFolder,
     )
 
     # get all files in the folder
-    lstFiles = os.listdir(strCodeFolder)
+    if strCodeFolder != '':
+        lstFiles = os.listdir(strCodeFolder)
+    else:
+        lstFiles = []
 
     lstFullPaths = []
 
     for strFile in lstFiles:
         lstFullPaths.append(os.path.join(strCodeFolder, strFile))
 
-    lstReference = os.listdir(strReferenceFolder)
+    if strReferenceFolder != '':
+        lstReference = os.listdir(strReferenceFolder)
+    else:
+        lstReference = []
 
     for strFile in lstReference:
         lstFullPaths.append(os.path.join(strReferenceFolder, strFile))
@@ -218,7 +357,7 @@ def analyze_cylbert(strEmbeddingsFolder, csvFile):
                 iVCEs += 1  
     
         # write the verdict
-        strVerdict = 'secure' if iVCEs > iSCEs else 'vulnerable'  
+        strVerdict = 'secure' if iVCEs < iSCEs else 'vulnerable'  
 
         mName = module.split('/')[-1]
 
