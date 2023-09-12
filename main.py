@@ -35,6 +35,7 @@ from singberta_embeddings import analyze_singberta      # analyzes the code usin
 import cylberta_embeddings
 import codebert_embeddings
 import analysis
+import single_file_pipeline
 
 # disable all warnings
 import warnings
@@ -91,9 +92,7 @@ print_header()
 # 
 # if the folders are empty, then we exit
 # and that is handled by the parse_arguments function
-meFolder, vceFolder, strModel, csvFile = parse_arguments()
-
-print(meFolder, vceFolder, strModel)    
+vceFolder, meFolder, strModel, csvFile = parse_arguments()
 
 # check if the folders exist and if they are not empty
 check_folders(meFolder, vceFolder)
@@ -103,16 +102,22 @@ create_workdir(strWorkDir)
 
 # extract embeddings from CodeX
 if strModel == 'codex':
-    extract_embeddings_codex(os.path.join(strWorkDir, 'results'), 
-                             vceFolder,
-                             meFolder, 
-                             os.path.join(strWorkDir, 'key/openAI_key.txt'))
+    single_file_pipeline.pipeline_codex(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result_codex.csv'),
+                                strWorkDir,  
+                                os.path.join(strWorkDir, 'key/openAI_key.txt'))
+    
+    #extract_embeddings_codex(os.path.join(strWorkDir, 'results'), 
+    #                         vceFolder,
+    #                         meFolder, 
+    #                         os.path.join(strWorkDir, 'key/openAI_key.txt'))
                              
     # calculate the similarity between the analyzed code and the reference code
-    calculate_distances_codex(os.path.join(strWorkDir, 'results'))
+    #calculate_distances_codex(os.path.join(strWorkDir, 'results'))
 
     # analyze the distances and print the code
-    analyze_codex(os.path.join(strWorkDir, 'results'), csvFile)
+    #analyze_codex(os.path.join(strWorkDir, 'results'), csvFile)
 
 # create the feature vectors for the analyzed code
 if strModel == 'ccflex':
@@ -132,23 +137,28 @@ if strModel == 'ccflex':
     analyze_ccflex(os.path.join(strWorkDir, 'results'))
 
 if strModel == 'singberta':
-    extract_embeddings_singberta(os.path.join(strWorkDir, 'results'),
-                                vceFolder, 
-                                meFolder)
-
-    # calculate the similarity between the analyzed code and the reference code
-    analysis.calculate_distances(os.path.join(strWorkDir, 'results/embeddings_singberta.csv'),
-                                 os.path.join(strWorkDir, 'results'))
-
-    # analyze the distances and print the code
-    analysis.analyze(os.path.join(strWorkDir, 'results/distances_singberta.csv'), csvFile)
+    single_file_pipeline.pipeline(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result.csv'),
+                                strWorkDir, 
+                                'singberta')
 
 if strModel == 'cylbert':
-    cylbert_analyze()
+    #cylbert_analyze()
+    single_file_pipeline.pipeline(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result.csv'), 
+                                strWorkDir,
+                                'cylbert')
 
 if strModel == 'codebert':
-    codebert_analyze()
-
+    #codebert_analyze()
+    single_file_pipeline.pipeline(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result.csv'), 
+                                strWorkDir,
+                                'codebert')
+    
 time.sleep(3)
 
 # end the program, print the end message

@@ -19,6 +19,100 @@ def get_embedding(text, engine="code-search-babbage-code-001", theKey=None):
    emb = openai.Embedding.create(input = [text], engine=engine)['data'][0]['embedding']
    return emb
 
+# extract embeddings from one file only
+def extract_embeddings_codex_one_file(strFile, strCodeXKeyFile):
+    with open(strCodeXKeyFile, 'r') as fKey:
+        theKey = fKey.readline()
+
+    # Load your API key from an environment variable or secret management service
+    openai.api_key = theKey
+
+    # read the file from the data directory
+    with open(strFile, 'r') as f:
+        lstLines = f.readlines()
+
+    # now go through all the lines and extract embeddings
+    dictEmbeddings = {}
+
+    # counter of the lines
+    iLines = 0
+
+    for strLine in lstLines:
+
+        # print the progress
+        iLines += 1
+        if iLines % 1000 == 0:
+            print(f'Processed {iLines} lines of {len(lstLines)} of file {strFile}')
+
+        # extract the features == embeddings
+        lstEmbedding = get_embedding(strLine, theKey=theKey)
+
+        # store the embedding in the dictionary
+        dictEmbeddings[strLine] = lstEmbedding
+
+    dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
+    lstEmbeddings = np.mean(dfEmbeddings.values, axis=0)
+
+    # we return the list of embeddings for the file
+    return lstEmbeddings
+
+# extract embeddings from the entire folder structure
+def extract_embeddings_codex_dict(strFolder,strCodeXKeyFile):
+
+    with open(strCodeXKeyFile, 'r') as fKey:
+        theKey = fKey.readline()
+
+    # Load your API key from an environment variable or secret management service
+    openai.api_key = theKey
+    
+    lstFullPaths = []
+
+    if strFolder != '':
+        lstReference = os.listdir(strFolder)
+    else:
+        lstReference = []
+
+    for strFile in lstReference:
+        lstFullPaths.append(os.path.join(strFolder, strFile))
+
+    # now go through all the files and extract embeddings
+    dictEmbeddingsFiles = {}
+
+    # counter of the files
+    iFiles = 0
+
+    for strFile in lstFullPaths:
+        print(f'Processing file {iFiles+1} of {len(lstFullPaths)} files')
+        iFiles += 1
+
+        # read the file from the data directory
+        with open(strFile, 'r') as f:
+            lstLines = f.readlines()
+
+        # now go through all the lines and extract embeddings
+        dictEmbeddings = {}
+
+        # counter of the lines
+        iLines = 0
+
+        for strLine in lstLines:
+
+            # print the progress
+            iLines += 1
+            if iLines % 1000 == 0:
+                print(f'Processed {iLines} lines of {len(lstLines)} of file {strFile}')
+
+            # extract the features == embeddings
+            lstEmbedding = get_embedding(strLine, theKey=theKey)
+
+            # store the embedding in the dictionary
+            dictEmbeddings[strLine] = lstEmbedding
+        
+        dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
+        lstEmbedding = np.mean(dfEmbeddings.values, axis=0)
+        dictEmbeddingsFiles[strFile] = lstEmbedding
+
+    return dictEmbeddingsFiles
 
 def extract_embeddings_codex(strEmbeddingsFolder,                              
                              strReferenceCodeFolder, 
