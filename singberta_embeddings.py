@@ -217,7 +217,7 @@ def analyze_singberta(strEmbeddingsFolder, csvFile):
                 iVCEs += 1  
     
         # write the verdict
-        strVerdict = 'secure' if iVCEs > iSCEs else 'vulnerable'  
+        strVerdict = 'secure' if iVCEs < iSCEs else 'vulnerable'  
 
         mName = module.split('/')[-1]
 

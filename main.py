@@ -33,6 +33,8 @@ from singberta_embeddings import extract_embeddings_singberta       # extracts t
 from singberta_embeddings import calculate_distances_singberta      # calculates the distances between the analyzed code and the reference code using the SingBERTa model
 from singberta_embeddings import analyze_singberta      # analyzes the code using the SingBERTa model
 import cylberta_embeddings
+import codebert_embeddings
+import analysis
 
 # disable all warnings
 import warnings
@@ -56,7 +58,22 @@ def cylbert_analyze():
     cylberta_embeddings.analyze_cylbert(os.path.join(strWorkDir, 'results'), 
                                         csvFile)
 
+def codebert_analyze():
+    ''' 
+    This function is used to analyze the code using the CylBERT model.
+    '''
+    codebert_embeddings.extract_embeddings_codebert(os.path.join(strWorkDir, 'results'),
+                                vceFolder, 
+                                meFolder)
 
+    # calculate the similarity between the analyzed code and the reference code
+    analysis.calculate_distances(os.path.join(strWorkDir, 'results/embeddings_codebert.csv'), 
+                                 os.path.join(strWorkDir, 'results'))
+
+    # analyze the distances and print the code
+    analysis.analyze(os.path.join(strWorkDir, 'results/distances_codebert.csv'),
+                    csvFile)
+    
 # debug flag, to steer what we actually calculate
 bDebug = False
 
@@ -120,13 +137,17 @@ if strModel == 'singberta':
                                 meFolder)
 
     # calculate the similarity between the analyzed code and the reference code
-    calculate_distances_singberta(os.path.join(strWorkDir, 'results'))
+    analysis.calculate_distances(os.path.join(strWorkDir, 'results/embeddings_singberta.csv'),
+                                 os.path.join(strWorkDir, 'results'))
 
     # analyze the distances and print the code
-    analyze_singberta(os.path.join(strWorkDir, 'results'), csvFile)
+    analysis.analyze(os.path.join(strWorkDir, 'results/distances_singberta.csv'), csvFile)
 
 if strModel == 'cylbert':
     cylbert_analyze()
+
+if strModel == 'codebert':
+    codebert_analyze()
 
 time.sleep(3)
 
