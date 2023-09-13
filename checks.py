@@ -12,6 +12,9 @@ import sys
 import os
 import mslogging
 
+def add_two_numbers(a, b):
+    return a+b
+
 # checking if folders exist and are not empty
 def check_folders(vceFolder, meFolder):
     bVCE = True
