@@ -158,6 +158,14 @@ if strModel == 'codebert':
                                 os.path.join(strWorkDir, 'results/result.csv'), 
                                 strWorkDir,
                                 'codebert')
+
+if strModel == 'codeberts':
+    #codebert_analyze()
+    single_file_pipeline.pipeline(vceFolder,
+                                meFolder,
+                                os.path.join(strWorkDir, 'results/result.csv'), 
+                                strWorkDir,
+                                'codebert')
     
 time.sleep(3)
 
