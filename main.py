@@ -25,7 +25,6 @@ from analysis import analyze_ccflex                     # analyzes the code
 from analysis import analyze_codex                      # analyzes the code
 from analysis import calculate_distances_ccflex         # calculates the distances between the analyzed code and the reference code
 from ccflex_embeddings import extract_embeddings_ccflex # extracts the embeddings matrix from the analyzed code
-from analysis import create_average_embeddings_ccflex   # creates the average embeddings matrix from the embeddings matrix
 from codex_embeddings import extract_embeddings_codex   # extracts the embeddings matrix from the analyzed code
 from analysis import calculate_distances_codex          # calculates the distances between the analyzed code and the reference code
 import time                                             # time library for sleep, only for the demo
@@ -94,6 +93,10 @@ print_header()
 # and that is handled by the parse_arguments function
 vceFolder, meFolder, strModel, csvFile = parse_arguments()
 
+meFolder = os.path.abspath(meFolder)
+vceFolder = os.path.abspath(vceFolder)
+
+
 # check if the folders exist and if they are not empty
 check_folders(meFolder, vceFolder)
 
@@ -121,18 +124,16 @@ if strModel == 'codex':
 
 # create the feature vectors for the analyzed code
 if strModel == 'ccflex':
-
     extract_embeddings_ccflex(os.path.join(strWorkDir, 'results'), 
                               vceFolder, 
                               meFolder, 
-                              manual_vocab = ['main', 'string', 'int'],
+                              vocab_manual = ['main', 'string', 'int'],
                               bow_vocab_size = 100)
     
-    # CCFlex creates embeddings for each line, so we need to create the average embeddings
-    create_average_embeddings_ccflex(os.path.join(strWorkDir, 'results'))
 
     # calculate the similarity between the analyzed code and the reference code
     calculate_distances_ccflex(os.path.join(strWorkDir, 'results'))
+    
     # analyze the distances and print the code
     analyze_ccflex(os.path.join(strWorkDir, 'results'))
 

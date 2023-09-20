@@ -21,36 +21,6 @@ import time
 import gc
 
 
-
-# method to calculate average embeddings
-def create_average_embeddings_ccflex(strEmbeddingsFolder):
-    dfAllLines = pd.read_csv(os.path.join(strEmbeddingsFolder, 'embeddings1.csv'), sep=';')
-    # create a column with the name of the file
-    # which is based on the id column
-    dfFile = dfAllLines.id
-
-    # this is the place where we split the name of the file and the line
-    # and leave only the line
-    dfFile = dfFile.apply(lambda x: x.split(':')[0])
-
-    # and only the name of the file
-    dfFile = dfFile.apply(lambda x: x.split('/')[-1])
-
-    # here we drop the features that are not needed
-    # ! IMPORTANT - if we want to drop the size-related columns, this is the place
-    dfAllLines.drop(columns=['id','contents'], axis=1, inplace=True)
-
-    # add the name of the file as a column
-    dfAllLines['file'] = dfFile
-
-    # group by will do the trick 
-    # my normalization is average per count of the lines
-    # so that we do not get problems that larger programs are per definition further away
-    dfEmbeddings = dfAllLines.groupby('file', axis=0).mean() #/dfAllLines.groupby('file', axis=0).count()
-
-    # save the embeddings to a file
-    dfEmbeddings.to_csv(os.path.join(strEmbeddingsFolder, 'embeddings_ccflex.csv'), sep=';')
-
 # method to calculate the distances between the analyzed code and the reference code
 def calculate_distances(strEmbeddingsFile, 
                         strDistanceFolder):
@@ -448,7 +418,7 @@ def analyze_ccflex(strEmbeddingsFolder):
                     print(f'>>>> {label}')
 
         # save the results to the csvFile file
-        with open(csvFile, 'a') as f:
+        with open(os.path.join(strEmbeddingsFolder, 'result_ccflex.csv'), 'a') as f:
             f.write(f'{mName},{strVerdict}\n')    
 
     return 1

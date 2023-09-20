@@ -1,0 +1,9 @@
+,Reference,Module,Distance
+0,SCE_3_sql_injection.cs,ME_sql_injection_negative.cs,0.01797708088390393
+1,SCE_3_sql_injection.cs,ME_sql_injection_positive.cs,0.8352014233999808
+2,SCE_4_sql_injection.cs,ME_sql_injection_negative.cs,0.4694185033240862
+3,SCE_4_sql_injection.cs,ME_sql_injection_positive.cs,0.8837796507268302
+4,VCE_27_sql_injection.cs,ME_sql_injection_negative.cs,0.8215559406358971
+5,VCE_27_sql_injection.cs,ME_sql_injection_positive.cs,0.8077649031737839
+6,VCE_28_sql_injection.cs,ME_sql_injection_negative.cs,0.7343634219283104
+7,VCE_28_sql_injection.cs,ME_sql_injection_positive.cs,0.8014887205445868
