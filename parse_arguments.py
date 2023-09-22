@@ -17,6 +17,8 @@ def parse_arguments():
     # define the default csv file variable
     csvFile = os.path.join(os.getcwd(), 'workdir/results.csv')
 
+    strModel = 'unknown'
+
     print('<< Parsing the arguments')
     # check the number of arguments
     if len(sys.argv) != 7:
@@ -47,7 +49,7 @@ def parse_arguments():
                 meFolder = sys.argv[i+1]
             if sys.argv[i] == '-m':
                 strModel = sys.argv[i+1]
-                if strModel != 'ccflex' and strModel != 'codex' and strModel != 'singberta' and strModel != 'cylbert' and strModel != 'codebert':
+                if not strModel in ['ccflex', 'codex', 'singberta', 'cylbert' , 'codebert']:
                     print("Wrong model, type -h or --help for help")
                     sys.exit(1)
             if sys.argv[i] == '-csv':

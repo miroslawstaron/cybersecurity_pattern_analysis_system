@@ -31,3 +31,5 @@ ocsp.c,vulnerable
 pk.c,vulnerable
 quic.c,vulnerable
 sniffer.c,vulnerable
+bio.c,vulnerable
+conf.c,vulnerable
