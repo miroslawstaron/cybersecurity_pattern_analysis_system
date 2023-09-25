@@ -149,12 +149,15 @@ def print_results(dfDistances,
 
         # here we print only the vulnerable modules and not all three
         # in order to not confuse the user
+        strRefLabels = ''
         for label in dfReferenceLabels:
-            print(f'>>>> {label.split("/")[-1]}')
+            lName = label.split("/")[-1]
+            print(f'>>>> {lName}')
+            strRefLabels = strRefLabels + ',' + lName
 
         # save the results to the csvFile file
         with open(csvFile, 'a') as f:
-            f.write(f'{mName},{strVerdict}\n')
+            f.write(f'{mName},{strVerdict},{strRefLabels}\n')
 
     return 1
 
@@ -179,42 +182,41 @@ def pipeline(strReferenceFolder,
     # for each file in the code folder, extract the embeddings and calculate the distances
     for strFile in os.listdir(strCodeFolder):
         
-        if os.path.isfile(strFile):
-            print(f'>>> Processing File: {strFile}')
+        print(f'>>> Processing File: {strFile}')
 
-            # calculate the embeddings for the analyzed code
-            if strModel == 'codebert':
-                lstEmbeddings = codebert_embeddings.extract_embeddings_codebert_one_file(os.path.join(strCodeFolder, strFile))
-            elif strModel == 'cylbert':
-                lstEmbeddings = cylberta_embeddings.extract_embeddings_cylbert_one_file(os.path.join(strCodeFolder, strFile))
-            elif strModel == 'singberta':
-                lstEmbeddings = singberta_embeddings.extract_embeddings_singberta_one_file(os.path.join(strCodeFolder, strFile))
-            else:
-                lstEmbeddings = []
+        # calculate the embeddings for the analyzed code
+        if strModel == 'codebert':
+            lstEmbeddings = codebert_embeddings.extract_embeddings_codebert_one_file(os.path.join(strCodeFolder, strFile))
+        elif strModel == 'cylbert':
+            lstEmbeddings = cylberta_embeddings.extract_embeddings_cylbert_one_file(os.path.join(strCodeFolder, strFile))
+        elif strModel == 'singberta':
+            lstEmbeddings = singberta_embeddings.extract_embeddings_singberta_one_file(os.path.join(strCodeFolder, strFile))
+        else:
+            lstEmbeddings = []
 
-            dictAnalyzedEmbeddings = {}
+        dictAnalyzedEmbeddings = {}
 
-            dictAnalyzedEmbeddings[strFile] = lstEmbeddings
+        dictAnalyzedEmbeddings[strFile] = lstEmbeddings
 
-            dfAnalyzedEmbeddings = pd.DataFrame.from_dict(dictAnalyzedEmbeddings, orient='index')
+        dfAnalyzedEmbeddings = pd.DataFrame.from_dict(dictAnalyzedEmbeddings, orient='index')
 
-            # add the dfAnalyzedEmbeddings to the dfAllEmbeddings dataframe
-            dfAllEmbeddings = pd.concat([dfAllEmbeddings, dfAnalyzedEmbeddings])
+        # add the dfAnalyzedEmbeddings to the dfAllEmbeddings dataframe
+        dfAllEmbeddings = pd.concat([dfAllEmbeddings, dfAnalyzedEmbeddings])
 
-            # save all embeddings to csv
-            dfAllEmbeddings.to_csv(os.path.join(strResultFolder, 'results/embeddings.csv'), sep='$')
+        # save all embeddings to csv
+        dfAllEmbeddings.to_csv(os.path.join(strResultFolder, 'results/embeddings.csv'), sep='$')
 
-            # calculate the distances between the reference and analyzed code
-            dfDistances = calculate_distances(dictReferenceEmbeddings, 
-                                            dictAnalyzedEmbeddings)
-            
-            dfAllDistances = pd.concat([dfAllDistances, dfDistances])
+        # calculate the distances between the reference and analyzed code
+        dfDistances = calculate_distances(dictReferenceEmbeddings, 
+                                          dictAnalyzedEmbeddings)
+        
+        dfAllDistances = pd.concat([dfAllDistances, dfDistances])
 
-            # save distances to file
-            dfAllDistances.to_csv(os.path.join(strResultFolder, 'results/distances.csv'), sep='$')
+        # save distances to file
+        dfAllDistances.to_csv(os.path.join(strResultFolder, 'results/distances.csv'), sep='$')
 
-            # print the results
-            print_results(dfDistances,strResultFile)
+        # print the results
+        print_results(dfDistances,strResultFile)
 
 
 def pipeline_codex(strReferenceFolder, 

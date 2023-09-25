@@ -19,9 +19,9 @@ def parse_arguments():
 
     strModel = 'unknown'
 
-    print('<< Parsing the arguments')
+    print(f'<< Parsing the arguments: {len(sys.argv)}')
     # check the number of arguments
-    if len(sys.argv) != 7:
+    if len(sys.argv) != 7 and len(sys.argv) != 9:
         # if there are three arguments, 
         # check if any of them is a help request
         if len(sys.argv) == 2:
