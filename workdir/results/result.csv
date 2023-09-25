@@ -1,8 +1,2 @@
-adac.c,vulnerable;SCE_6_compiled_regex.cpp;VCE_1_flag_no_validation.cpp;VCE_2_shell_escape_bash.cpp
-adac.h,vulnerable;VCE_1_flag_no_validation.cpp;SCE_7_user_input_validation.cpp;VCE_4_fails_to_check_for_negative.cpp
-adac_if.h,vulnerable;SCE_6_compiled_regex.cpp;VCE_1_flag_no_validation.cpp;VCE_2_shell_escape_bash.cpp
-bsi.c,vulnerable;SCE_7_user_input_validation.cpp;VCE_1_flag_no_validation.cpp;VCE_2_shell_escape_bash.cpp
-bsi.h,vulnerable;SCE_6_compiled_regex.cpp;VCE_1_flag_no_validation.cpp;VCE_2_shell_escape_bash.cpp
-r5f565ne.c,secure;VCE_1_flag_no_validation.cpp;SCE_7_user_input_validation.cpp;SCE_3_free_text_letters_only_py.cpp
-r5f565ne.h,vulnerable;SCE_6_compiled_regex.cpp;VCE_1_flag_no_validation.cpp;VCE_2_shell_escape_bash.cpp
+
 
