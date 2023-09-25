@@ -85,13 +85,9 @@ def extract_embeddings_codebert_dict(strFolder):
     
     lstFullPaths = []
 
-    if strFolder != '':
-        lstReference = os.listdir(strFolder)
-    else:
-        lstReference = []
-
-    for strFile in lstReference:
-        lstFullPaths.append(os.path.join(strFolder, strFile))
+    for root, dirs, files in os.walk(strFolder):
+        for strFile in files:
+            lstFullPaths.append(os.path.join(root, strFile))
 
     # now go through all the files and extract embeddings
     dictEmbeddingsFiles = {}
@@ -100,12 +96,12 @@ def extract_embeddings_codebert_dict(strFolder):
     iFiles = 0
 
     for strFile in lstFullPaths:
-        print(f'Processing file {iFiles+1} of {len(lstFullPaths)} files')
+        print(f'Processing reference file {iFiles+1} of {len(lstFullPaths)} files')
         iFiles += 1
 
         # read the file from the data directory
         if os.path.isfile(strFile):
-            with open(strFile, 'r', encoding='utf-8') as f:
+            with open(strFile, 'r', encoding='utf-8', errors='ignore') as f:
                 lstLines = f.readlines()
 
             # now go through all the lines and extract embeddings
@@ -122,15 +118,18 @@ def extract_embeddings_codebert_dict(strFolder):
                     print(f'Processed {iLines} lines of {len(lstLines)} of file {iFiles} of {len(lstFullPaths)} files')
 
                 # extract the features == embeddings
-                lstFeatures = features(strLine)
+                # check if the line, after tokenization, is less than 512 tokens
+                # if it is, then we can extract the embeddings
+                if len(tokenizer.tokenize(strLine)) < 512:
+                    lstFeatures = features(strLine)
 
-                # get the embedding of the first token [CLS]
-                # which is also a good approximation of the whole sentence embedding
-                # the same as using np.mean(lstFeatures[0], axis=0)
-                lstEmbedding = lstFeatures[0][0]
+                    # get the embedding of the first token [CLS]
+                    # which is also a good approximation of the whole sentence embedding
+                    # the same as using np.mean(lstFeatures[0], axis=0)
+                    lstEmbedding = lstFeatures[0][0]
 
-                # store the embedding in the dictionary
-                dictEmbeddings[strLine] = lstEmbedding
+                    # store the embedding in the dictionary
+                    dictEmbeddings[strLine] = lstEmbedding
         
             dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
             lstEmbedding = np.mean(dfEmbeddings.values, axis=0)

@@ -361,6 +361,8 @@ def analyze_ccflex(strEmbeddingsFolder):
 
     dfDistances = pd.read_csv(strFile, index_col=0)
 
+    print(dfDistances.head())
+
     # for each module, visualize the distances 
     # between that module and the reference code samples
 
@@ -377,7 +379,7 @@ def analyze_ccflex(strEmbeddingsFolder):
         dfModule = dfModule.sort_values(by=['Distance'])
         
         # get the top 3
-        dfModule = dfModule.head(1)        
+        dfModule = dfModule.head(3)        
         
         # get the names of the top 3
         dfModuleNames = dfModule['Module']
@@ -395,7 +397,7 @@ def analyze_ccflex(strEmbeddingsFolder):
         iVCEs = 0
         for label in dfModuleLabels:
             
-            if label.startswith('SCE'):
+            if label.startswith('SCE_'):
                 iSCEs += 1
             else:
                 iVCEs += 1  
@@ -407,15 +409,14 @@ def analyze_ccflex(strEmbeddingsFolder):
 
         # print the verdict
         # changed to printing only the violations and then the examples
-        if strVerdict == 'vulnerable':
-            print('*****')
-            print(f'Module {mName} is flagged as {strVerdict}, with the following reference violations:')
+    
+        print('*****')
+        print(f'Module {mName} is flagged as {strVerdict}, with the following reference violations:')
 
-            # here we print only the vulnerable modules and not all three
-            # in order to not confuse the user
-            for label in dfModuleLabels:
-                if label.startswith('VCE'):
-                    print(f'>>>> {label}')
+        # here we print only the vulnerable modules and not all three
+        # in order to not confuse the user
+        for label in dfModuleLabels:
+            print(f'>>>> {label}')
 
         # save the results to the csvFile file
         with open(os.path.join(strEmbeddingsFolder, 'result_ccflex.csv'), 'a') as f:

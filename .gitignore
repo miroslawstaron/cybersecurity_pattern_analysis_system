@@ -42,3 +42,5 @@ key/openAI_key.txt
 tests/openAI_key.txt
 workdir/results/*
 workdir/results/result.csv
+__pycache__/analysis.cpython-38.pyc
+__pycache__/parse_arguments.cpython-38.pyc

@@ -78,12 +78,14 @@ def calculate_distances(dictReferenceEmbeddings,
         lstAnalyzedEmbeddings = dictAnalyzedEmbeddings[strFile]
     
         for strReferenceFile in dictReferenceEmbeddings.keys():
-            lstReferenceEmbeddings = dictReferenceEmbeddings[strReferenceFile]
+            # if the filename starts with SCE_ or VCE_
+            if 'SCE_' in strReferenceFile or 'VCE_' in strReferenceFile:
+                lstReferenceEmbeddings = dictReferenceEmbeddings[strReferenceFile]
 
-            # calculate the distances
-            fltDistance = spatial.distance.cosine(lstAnalyzedEmbeddings, lstReferenceEmbeddings)
+                # calculate the distances
+                fltDistance = spatial.distance.cosine(lstAnalyzedEmbeddings, lstReferenceEmbeddings)
 
-            lstDistances.append([strFile, strReferenceFile, fltDistance])
+                lstDistances.append([strFile, strReferenceFile, fltDistance])
     
     dfDistances = pd.DataFrame(lstDistances, columns=['Module', 'Reference', 'Distance'])
     
