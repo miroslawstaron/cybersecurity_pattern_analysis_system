@@ -40,3 +40,5 @@ tests/__pycache__/*
 __pycache__/*
 key/openAI_key.txt
 tests/openAI_key.txt
+workdir/results/*
+workdir/results/result.csv
