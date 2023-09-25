@@ -361,7 +361,6 @@ def analyze_ccflex(strEmbeddingsFolder):
 
     dfDistances = pd.read_csv(strFile, index_col=0)
 
-    print(dfDistances.head())
 
     # for each module, visualize the distances 
     # between that module and the reference code samples
