@@ -151,13 +151,13 @@ def print_results(dfDistances,
         # in order to not confuse the user
         strRefLabels = ''
         for label in dfReferenceLabels:
-            lName = label.split("/")[-1]
+            lName = label.split("/")[-1] if "/" in label else label.split("\\")[-1]
             print(f'>>>> {lName}')
-            strRefLabels = strRefLabels + ',' + lName
+            strRefLabels = strRefLabels + ';' + lName
 
         # save the results to the csvFile file
         with open(csvFile, 'a') as f:
-            f.write(f'{mName},{strVerdict},{strRefLabels}\n')
+            f.write(f'{mName},{strVerdict}{strRefLabels}\n')
 
     return 1
 
