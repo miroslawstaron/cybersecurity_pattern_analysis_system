@@ -58,16 +58,19 @@ def extract_embeddings_cylbert_one_file(strFile):
             print(f'Processed {iLines} lines of {len(lstLines)} of file {strFile}')
 
         # extract the features == embeddings
-        lstFeatures = features(strLine)
+        try: 
+            lstFeatures = features(strLine)
 
-        # get the embedding of the first token [CLS]
-        # which is also a good approximation of the whole sentence embedding
-        # the same as using np.mean(lstFeatures[0], axis=0)
-        lstEmbedding = lstFeatures[0][0]
+            # get the embedding of the first token [CLS]
+            # which is also a good approximation of the whole sentence embedding
+            # the same as using np.mean(lstFeatures[0], axis=0)
+            lstEmbedding = lstFeatures[0][0]
 
-        # store the embedding in the dictionary
-        dictEmbeddings[strLine] = lstEmbedding
-    
+            # store the embedding in the dictionary
+            dictEmbeddings[strLine] = lstEmbedding
+        except RuntimeError:
+            print(f'Problems with extracting embeddings {strFile[:5]}...') 
+
     dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
     lstEmbeddings = np.mean(dfEmbeddings.values, axis=0)
 
