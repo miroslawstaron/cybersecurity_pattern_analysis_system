@@ -41,7 +41,7 @@ def extract_embeddings_cylbert_one_file(strFile):
     )
 
     # read the file from the data directory
-    with open(strFile, 'r') as f:
+    with open(strFile, 'r', encoding='utf-8', errors='ignore') as f:
         lstLines = f.readlines()
 
     # now go through all the lines and extract embeddings
