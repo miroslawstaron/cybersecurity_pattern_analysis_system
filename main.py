@@ -127,7 +127,7 @@ if strModel == 'ccflex':
     extract_embeddings_ccflex(os.path.join(strWorkDir, 'results'), 
                               vceFolder, 
                               meFolder, 
-                              vocab_manual = ['main', 'string', 'int'],
+                              vocab_manual = ['main', 'string', 'int', '->', 'NULL', '*', '&'],
                               bow_vocab_size = 100)
     
 

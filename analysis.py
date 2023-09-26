@@ -414,11 +414,17 @@ def analyze_ccflex(strEmbeddingsFolder):
 
         # here we print only the vulnerable modules and not all three
         # in order to not confuse the user
+        # here we print only the vulnerable modules and not all three
+        # in order to not confuse the user
+        strReferences = ''
+
         for label in dfModuleLabels:
-            print(f'>>>> {label}')
+            labelName = label.split('/')[-1]
+            strReferences = strReferences + ';' + labelName
+            print(f'>>>> {labelName}')
 
         # save the results to the csvFile file
         with open(os.path.join(strEmbeddingsFolder, 'result_ccflex.csv'), 'a') as f:
-            f.write(f'{mName},{strVerdict}\n')    
+            f.write(f'{mName},{strVerdict},{strReferences}\n')    
 
     return 1
