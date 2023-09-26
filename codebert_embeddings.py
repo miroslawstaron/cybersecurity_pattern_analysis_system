@@ -120,7 +120,7 @@ def extract_embeddings_codebert_dict(strFolder):
                 # extract the features == embeddings
                 # check if the line, after tokenization, is less than 512 tokens
                 # if it is, then we can extract the embeddings
-                if len(tokenizer.tokenize(strLine)) < 512:
+                try:
                     lstFeatures = features(strLine)
 
                     # get the embedding of the first token [CLS]
@@ -130,7 +130,9 @@ def extract_embeddings_codebert_dict(strFolder):
 
                     # store the embedding in the dictionary
                     dictEmbeddings[strLine] = lstEmbedding
-        
+                except:
+                    print(f'Problem in embedding line, skipping: {strLine[:5]}...')
+
             dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
             lstEmbedding = np.mean(dfEmbeddings.values, axis=0)
             dictEmbeddingsFiles[strFile] = lstEmbedding
