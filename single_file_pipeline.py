@@ -208,7 +208,7 @@ def pipeline(strReferenceFolder,
             dfAllEmbeddings = pd.concat([dfAllEmbeddings, dfAnalyzedEmbeddings])
 
             # save all embeddings to csv
-            dfAllEmbeddings.to_csv(os.path.join(strResultFolder, 'results/embeddings.csv'), sep='$')
+            dfAllEmbeddings.to_csv(os.path.join(strResultFolder, f'results/embeddings_{strModel}.csv'), sep='$')
 
             # calculate the distances between the reference and analyzed code
             dfDistances = calculate_distances(dictReferenceEmbeddings, 
@@ -217,7 +217,7 @@ def pipeline(strReferenceFolder,
             dfAllDistances = pd.concat([dfAllDistances, dfDistances])
 
             # save distances to file
-            dfAllDistances.to_csv(os.path.join(strResultFolder, 'results/distances.csv'), sep='$')
+            dfAllDistances.to_csv(os.path.join(strResultFolder, f'results/distances_{strModel}.csv'), sep='$')
 
             # print the results
             print_results(dfDistances,strResultFile)

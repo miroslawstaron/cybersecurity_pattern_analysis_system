@@ -140,7 +140,7 @@ if strModel == 'ccflex':
 if strModel == 'singberta':
     single_file_pipeline.pipeline(vceFolder,
                                 meFolder,
-                                os.path.join(strWorkDir, 'results/result.csv'),
+                                os.path.join(strWorkDir, 'results/result_singberta.csv'),
                                 strWorkDir, 
                                 'singberta')
 
@@ -148,7 +148,7 @@ if strModel == 'cylbert':
     #cylbert_analyze()
     single_file_pipeline.pipeline(vceFolder,
                                 meFolder,
-                                os.path.join(strWorkDir, 'results/result.csv'), 
+                                os.path.join(strWorkDir, 'results/result_cylbert.csv'), 
                                 strWorkDir,
                                 'cylbert')
 
@@ -156,7 +156,7 @@ if strModel == 'codebert':
     #codebert_analyze()
     single_file_pipeline.pipeline(vceFolder,
                                 meFolder,
-                                os.path.join(strWorkDir, 'results/result.csv'), 
+                                os.path.join(strWorkDir, 'results/result_codebert.csv'), 
                                 strWorkDir,
                                 'codebert')
     
