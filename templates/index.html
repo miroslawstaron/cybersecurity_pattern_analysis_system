@@ -9,14 +9,21 @@
     <p>Code is the code to be analyzed, and model is the name of the model to be used for the analysis. The model name should be one of the following: </p>
     <ul>
         <li>codebert</li>
-        <li>singroberta</li>
-        <li>ccflex</li>
+        <li>singberta</li>
     </ul>
+
+    The vulnerability has two values (are added):
+    <ul>
+        <li>sql_injection</li>
+        <li>input_validation</li>
+    </ul>
+    
     <p>Example JSON:</p>
     <code>
         {
             "code": "public class Test { public static void main(String[] args) { System.out.println(\"Hello World!\"); } }",
-            "model": "codebert"
+            "model": "codebert",
+            "vulnerability": "sql_injection"
         }
 </body>
 </html>
