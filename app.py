@@ -18,7 +18,10 @@ def predict():
         code = input_json['code']
         model = input_json['model']
         vulnerability = input_json['vulnerability']
-
+    except:
+        return flask.jsonify({'result': 'Error: error reading input, maybe the JSON was not well formatted. Try URL encoding the code', 
+                            'references': []})
+    try:
         # do something with code and model
         if model == 'codebert' or model == 'singberta':
             snippet_embeddings = {"ME": codebert_embeddings.extract_embeddings_codebert_from_string(code)}
@@ -52,7 +55,7 @@ def predict():
             return flask.jsonify({'result': 'Error: model not supported', 
                                 'references': []})
     except:
-        return flask.jsonify({'result': 'Error: error processing input', 
+        return flask.jsonify({'result': 'Error: problem with processing the code or model not available', 
                             'references': []})
 
 # define the standard endpoint at / that displays a webpage from the web foldes
