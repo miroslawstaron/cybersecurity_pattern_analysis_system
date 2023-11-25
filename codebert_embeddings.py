@@ -72,6 +72,39 @@ def extract_embeddings_codebert_one_file(strFile):
     # we return the list of embeddings for the file
     return lstEmbeddings
 
+def extract_embeddings_codebert_from_string(code_string):
+    tokenizer = RobertaTokenizer.from_pretrained("microsoft/codebert-base", max_length=512)
+
+    features = pipeline(
+        "feature-extraction",
+        model="microsoft/codebert-base",
+        tokenizer="microsoft/codebert-base", 
+        return_tensor = False
+    )
+
+    # Split the code string into lines
+    lstLines = code_string.split('\n')
+
+    dictEmbeddings = {}
+    iLines = 0
+
+    for strLine in lstLines:
+        iLines += 1
+        if iLines % 1000 == 0:
+            print(f'Processed {iLines} lines of {len(lstLines)}')
+
+        try:
+            lstFeatures = features(strLine)
+            lstEmbedding = lstFeatures[0][0]
+            dictEmbeddings[strLine] = lstEmbedding
+        except:
+            print(f'Problem in embedding line, skipping {strLine[:5]}...')
+
+    dfEmbeddings = pd.DataFrame.from_dict(dictEmbeddings, orient='index')
+    lstEmbeddings = np.mean(dfEmbeddings.values, axis=0)
+
+    return lstEmbeddings
+
 # extract embeddings from the entire folder structure
 def extract_embeddings_codebert_dict(strFolder):
 

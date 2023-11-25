@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Welcome to cybersecurity analysis system</title>
+</head>
+<body>
+    <h1>Usage</h1>
+    <p>Send a JSON string to the web service the /predict endpoint of this address. The JSON should contain two elements: code and model</p>
+    <p>Code is the code to be analyzed, and model is the name of the model to be used for the analysis. The model name should be one of the following: </p>
+    <ul>
+        <li>codebert</li>
+        <li>singroberta</li>
+        <li>ccflex</li>
+    </ul>
+    <p>Example JSON:</p>
+    <code>
+        {
+            "code": "public class Test { public static void main(String[] args) { System.out.println(\"Hello World!\"); } }",
+            "model": "codebert"
+        }
+</body>
+</html>
