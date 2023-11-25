@@ -44,3 +44,9 @@ workdir/results/*
 workdir/results/result.csv
 __pycache__/analysis.cpython-38.pyc
 __pycache__/parse_arguments.cpython-38.pyc
+src/pyccflex.egg-info/dependency_links.txt
+src/pyccflex.egg-info/not-zip-safe
+src/pyccflex.egg-info/PKG-INFO
+src/pyccflex.egg-info/requires.txt
+src/pyccflex.egg-info/SOURCES.txt
+src/pyccflex.egg-info/top_level.txt

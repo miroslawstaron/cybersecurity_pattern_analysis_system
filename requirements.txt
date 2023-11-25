@@ -8,3 +8,4 @@ scipy
 scikit-learn
 openpyxl
 openai
+-e git+https://github.com/mochodek/py-ccflex.git@fb33fcb5417cc53dc024cc1455ca92adbd9103f4#egg=pyccflex

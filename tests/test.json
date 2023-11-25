@@ -2,5 +2,6 @@
     "code": "printf(\"Hello World\");\n
     // not your code\n
     // and more comments",
-    "model": "codebert"
+    "model": "codebert",
+    "vulnerability": "input_validation"
 }

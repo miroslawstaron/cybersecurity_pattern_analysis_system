@@ -80,7 +80,9 @@ def calculate_distances(dictReferenceEmbeddings,
         for strReferenceFile in dictReferenceEmbeddings.keys():
             # if the filename starts with SCE_ or VCE_
             if 'SCE_' in strReferenceFile or 'VCE_' in strReferenceFile:
-                lstReferenceEmbeddings = dictReferenceEmbeddings[strReferenceFile]
+                lstReferenceEmbeddings = list(dictReferenceEmbeddings[strReferenceFile].values())
+
+                print(lstReferenceEmbeddings)
 
                 # calculate the distances
                 fltDistance = spatial.distance.cosine(lstAnalyzedEmbeddings, lstReferenceEmbeddings)
@@ -163,6 +165,76 @@ def print_results(dfDistances,
 
     return 1
 
+# print the analysis to the screen and then to the csv file
+def check_vulnerability(dfDistances):
+    '''
+    This function is used to check if the analyzed code is vulnerable or not.
+    '''
+    
+    # for each module, visualize the distances 
+    # between that module and the reference code samples
+
+    dfDistances.reset_index(inplace=True)
+
+    # get unique list of modules
+    modules = dfDistances.Module.unique()
+
+    # for each module - find the three closest reference programs
+    # and check if they are SCEs or VCEs
+    for module in modules:
+        # get the distances for the current module
+        dfModule = dfDistances[dfDistances['Module'] == module]
+        
+        # sort the distances
+        dfModule = dfModule.sort_values(by=['Distance'])
+        
+        # get the top 3
+        dfModule = dfModule.head(3)
+        
+        # get the names of the top 3
+        dfModuleNames = dfModule['Module']
+        
+        # get the distances of the top 3
+        dfModuleDistances = dfModule['Distance']
+        
+        # get the labels of the top 3
+        dfReferenceLabels = dfModule['Reference']
+
+        # print(dfModuleLabels)
+
+        # check if they are SCEs or VCEs
+        iSCEs = 0
+        iVCEs = 0
+        for label in dfReferenceLabels:
+            if 'SCE_' in label:
+                iSCEs += 1
+            else:
+                iVCEs += 1  
+    
+        # write the verdict
+        strVerdict = 'secure' if iVCEs < iSCEs else 'vulnerable'  
+
+        mName = module.split('/')[-1]
+
+        # print the verdict
+        # changed to printing only the violations and then the examples
+        
+        print('*****')
+        print(f'Module {mName} is flagged as {strVerdict}, with the following reference examples:')
+
+        lstReferences = []
+
+        # here we print only the vulnerable modules and not all three
+        # in order to not confuse the user
+        strRefLabels = ''
+        for label in dfReferenceLabels:
+            lName = label.split("/")[-1] if "/" in label else label.split("\\")[-1]
+            print(f'>>>> {lName}')
+            strRefLabels = strRefLabels + ';' + lName
+            lstReferences.append(lName) 
+
+    return strVerdict, lstReferences
+
 # the entire analysis pipeline
 def pipeline(strReferenceFolder, 
              strCodeFolder, 
@@ -178,6 +250,8 @@ def pipeline(strReferenceFolder,
 
     # save reference embeddings to a file
     dfAllEmbeddings = pd.DataFrame.from_dict(dictReferenceEmbeddings, orient='index')
+
+    dfAllEmbeddings.to_csv(os.path.join(strResultFolder, f'embeddings_{strModel}.csv'), sep='$')
 
     dfAllDistances = pd.DataFrame(data=[], columns=['Module', 'Reference', 'Distance'])
 
