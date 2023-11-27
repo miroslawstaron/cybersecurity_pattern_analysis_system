@@ -58,6 +58,20 @@ def predict():
         return flask.jsonify({'result': 'Error: problem with processing the code or model not available', 
                             'references': []})
 
+# define an endpoint that accepts the same json as above and return the code that was sent to it
+@app.route('/echo', methods=['POST'])
+def echo():
+    # read in JSON input
+    input_json = flask.request.json
+
+    # get code and model from JSON
+    code = input_json['code']
+    model = input_json['model']
+    vulnerability = input_json['vulnerability']
+
+    # return a JSON string
+    return flask.jsonify({'code': code, 'model': model, 'vulnerability': vulnerability})
+
 # define the standard endpoint at / that displays a webpage from the web foldes
 @app.route('/')
 def index():
@@ -66,4 +80,4 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(port=5001, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
