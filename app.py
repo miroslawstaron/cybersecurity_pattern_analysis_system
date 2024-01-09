@@ -72,6 +72,15 @@ def echo():
     # return a JSON string
     return flask.jsonify({'code': code, 'model': model, 'vulnerability': vulnerability})
 
+# define the endpoint which shows how many vulnerabilities are in the csv file
+@app.route('/vulnerabilities', methods=['GET'])
+def vulnerabilities():
+    # read in the csv file
+    df = pd.read_csv('database/embeddings_codebert_input_validation.csv', header=None, sep='$', index_col=0)
+
+    # return a JSON string
+    return flask.jsonify({'vulnerabilities': df.shape[0]})
+
 # define the standard endpoint at / that displays a webpage from the web foldes
 @app.route('/')
 def index():
