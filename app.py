@@ -98,8 +98,19 @@ def vulnerabilities():
     # read in the csv file
     df = pd.read_csv('database/embeddings_codebert.csv', sep='$')
 
+    dictVulnerabilities = df.groupby('vulnerability').count()['filename'].to_dict()
+
+    df = pd.read_csv('database/embeddings_singberta.csv', sep='$')
+
+    dictVulnerabilities2 = df.groupby('vulnerability').count()['filename'].to_dict()
+
+    # merge these two dictionaries
+    dictVulnerabilitiesAll = {'CodeBert': dictVulnerabilities, 'SingBerta': dictVulnerabilities2}
+
+    # df.groupby('vulnerability').count()['filename'].to_json()
     # return a JSON string
-    return df.groupby('vulnerability').count()['filename'].to_json()
+    return flask.jsonify(dictVulnerabilitiesAll)
+    
 
 # define endpoint to add new example to the database
 # which accepts a JSON string with the following fields: code, model, vulnerability, type (positive or negative)
