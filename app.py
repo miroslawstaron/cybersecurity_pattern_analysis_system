@@ -28,7 +28,7 @@ def predict():
     try:
         # do something with code and model
         if model == 'codebert' or model == 'singberta':
-            snippet_embeddings = codebert_embeddings.extract_embeddings_codebert_from_string(code)
+            snippet_embeddings = codebert_embeddings.extract_embeddings_codebert_from_string(code) if model == 'codebert' else singberta_embeddings.extract_embeddings_singberta_from_string(code)
 
             steps.append(f'extracted embeddings from {model}')
 
@@ -138,7 +138,7 @@ def add_example():
         steps.append('extracted embeddings')
 
         # read the db in csv
-        dfDB = pd.read_csv('database/embeddings_codebert.csv', sep='$')
+        dfDB = pd.read_csv(f'database/embeddings_{model}.csv', sep='$')
 
         steps.append('read reference database, rows = ' + str(dfDB.shape[0]) + ', columns = ' + str(dfDB.shape[1]))
 
@@ -164,7 +164,7 @@ def add_example():
         steps.append('concatenated dataframes rows = ' + str(dfDB.shape[0]) + ' columns = ' + str(dfDB.shape[1]))
 
         # save the dataframe to the csv
-        dfDB.to_csv('database/embeddings_codebert.csv', sep='$', index=False)
+        dfDB.to_csv(f'database/embeddings_{model}.csv', sep='$', index=False)
 
         steps.append('saved dataframe')
         

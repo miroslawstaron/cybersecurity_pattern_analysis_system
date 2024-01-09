@@ -3,7 +3,7 @@
     // not your code\n
     // and more comments
     return 1;",
-    "model": "codebert",
+    "model": "singberta",
     "vulnerability": "input_validation",
     "type": "SCE"
 }
