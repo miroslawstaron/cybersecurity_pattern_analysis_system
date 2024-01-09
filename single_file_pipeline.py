@@ -332,3 +332,21 @@ def pipeline_codex(strReferenceFolder,
 
         # print the results
         print_results(dfDistances,strResultFile)
+
+def calculate_distances_from_dict(dictReferenceEmbeddings, dictCodeEmbeddings):
+    ''' Takes two dictionaries of embeddings as input and calculates the distances
+        between the analyzed code and the reference code. The output is a dataframe
+        with the distances between the analyzed code and the reference code. '''
+
+    # List of lists with the results
+    lstRes = []
+
+    for refKeys in dictReferenceEmbeddings.keys():
+        for modKeys in dictCodeEmbeddings.keys():
+            distance = spatial.distance.cosine(dictReferenceEmbeddings[refKeys], dictCodeEmbeddings[modKeys])
+            oneDistance = [refKeys, modKeys, distance]
+            lstRes.append(oneDistance)
+
+    dfDistances = pd.DataFrame(lstRes, columns=['Reference', 'Module', 'Distance'])
+
+    return dfDistances
