@@ -21,6 +21,8 @@ import time
 import gc
 
 
+
+
 # method to calculate the distances between the analyzed code and the reference code
 def calculate_distances(strEmbeddingsFile, 
                         strDistanceFolder):

@@ -1,0 +1,9 @@
+{
+    "code": "printf(\"Hello World\");\n
+    // not your code\n
+    // and more comments
+    return 1;",
+    "model": "singberta",
+    "vulnerability": "input_validation",
+    "type": "SCE"
+}

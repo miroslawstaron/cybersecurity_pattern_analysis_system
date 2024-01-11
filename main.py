@@ -24,7 +24,7 @@ from setup_dirs import copy_folders                     # copies the folders to 
 from analysis import analyze_ccflex                     # analyzes the code
 from analysis import analyze_codex                      # analyzes the code
 from analysis import calculate_distances_ccflex         # calculates the distances between the analyzed code and the reference code
-from ccflex_embeddings import extract_embeddings_ccflex # extracts the embeddings matrix from the analyzed code
+#from ccflex_embeddings import extract_embeddings_ccflex # extracts the embeddings matrix from the analyzed code
 from codex_embeddings import extract_embeddings_codex   # extracts the embeddings matrix from the analyzed code
 from analysis import calculate_distances_codex          # calculates the distances between the analyzed code and the reference code
 import time                                             # time library for sleep, only for the demo

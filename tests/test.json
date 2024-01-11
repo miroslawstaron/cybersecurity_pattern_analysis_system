@@ -1,0 +1,7 @@
+{
+    "code": "printf(\"Hello World\");\n
+    // not your code\n
+    // and more comments",
+    "model": "singberta",
+    "vulnerability": "input_validation"
+}
