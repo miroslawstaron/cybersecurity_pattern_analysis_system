@@ -1,9 +1,10 @@
 {
-    "code": "printf(\"Hello World\");\n
-    // not your code\n
-    // and more comments
-    return 1;",
+    "code": "error = scanf(%d, &m);
+    if ( EOF == error ){
+        printf(No integer passed: Die evil hacker!\n);
+        return 1; // Exit the program
+    }",
     "model": "singberta",
-    "vulnerability": "input_validation",
+    "vulnerability": "CVE_20",
     "type": "SCE"
 }

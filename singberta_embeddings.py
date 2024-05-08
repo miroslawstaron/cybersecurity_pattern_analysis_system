@@ -83,17 +83,17 @@ def extract_embeddings_singberta_from_string(code_string):
         type_vocab_size=1,
     )    
     
-    tokenizer = RobertaTokenizer.from_pretrained("mstaron/SingBERTa", max_length=512)
+    tokenizer = RobertaTokenizer.from_pretrained("mstaron/SingletonBERT", max_length=512)
 
     features = pipeline(
         "feature-extraction",
-        model="mstaron/SingBERTa",
-        tokenizer="mstaron/SingBERTa", 
+        model="mstaron/SingletonBERT",
+        tokenizer="mstaron/SingletonBERT", 
         return_tensor = False
     )
 
     # Split the code string into lines
-    lstLines = code_string.split('\n')
+    lstLines = code_string
 
     dictEmbeddings = {}
     iLines = 0

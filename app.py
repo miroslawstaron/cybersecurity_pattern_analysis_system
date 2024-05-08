@@ -5,7 +5,14 @@ import pandas as pd
 from single_file_pipeline import calculate_distances
 from single_file_pipeline import calculate_distances_from_dict
 from single_file_pipeline import check_vulnerability
+from single_file_pipeline import predict_large
+from single_file_pipeline import predict_small
+from werkzeug.utils import secure_filename
+import os
 import random
+
+# chunk size for large code
+chunk_size = 50
 
 app = flask.Flask(__name__)
 
@@ -13,70 +20,66 @@ app = flask.Flask(__name__)
 @app.route('/predict', methods=['POST'])
 def predict():
     steps = []
+    dictResult = {}
+
+    steps.append('starting predict endpoint')
 
     try:
-        # read in JSON input 
-        input_json = flask.request.json
+        # Check if a file was uploaded
+        if 'file' in flask.request.files:
+            # Get the uploaded file from the request
+            file = flask.request.files['file']
 
-        # get code and model from JSON
-        code = input_json['code']
-        model = input_json['model']
-        vulnerability = input_json['vulnerability']
-    except:
-        return flask.jsonify({'result': 'Error: error reading input, maybe the JSON was not well formatted. Try URL encoding the code', 
-                            'references': []})
-    try:
-        # do something with code and model
-        if model == 'codebert' or model == 'singberta':
-            snippet_embeddings = codebert_embeddings.extract_embeddings_codebert_from_string(code) if model == 'codebert' else singberta_embeddings.extract_embeddings_singberta_from_string(code)
+            # Secure the filename to avoid directory traversal attacks
+            filename = secure_filename(file.filename)
 
-            steps.append(f'extracted embeddings from {model}')
+            # Save the uploaded file to a temporary directory
+            file.save(os.path.join('workdir/temp', filename))
 
-            # now read the embeddings of the reference files from database/embeddings_codebert_input_validation.csv
-            dfRefEmbeddings = pd.read_csv(f'database/embeddings_{model}.csv', sep='$', index_col=None) 
+            # Open the saved file and read its contents
+            with open(os.path.join('workdir/temp', filename), 'r') as f:
+                code = f.readlines()
 
-            steps.append('read reference embeddings: ' + str(dfRefEmbeddings.shape[0]) + ' rows ' + str(dfRefEmbeddings.shape[1]) + ' columns')
-            
-            # select only the rows that contain the vulnerability
-            dfRefEmbeddings = dfRefEmbeddings[dfRefEmbeddings['vulnerability'] == vulnerability]
+            # remove the saved file
+            os.remove(os.path.join('workdir/temp', filename))
 
-            steps.append('selected only the rows that contain the vulnerability')
-            
-            # if the number of rows in dfRefEmbeddings is 0, then the model is not supported
-            if dfRefEmbeddings.shape[0] == 0:
-                vulnerability_result = 'Error: vulnerability not supported'
-                steps.append('vulnebility not supported: ' + vulnerability)
-                return flask.jsonify({'result': vulnerability_result, 
-                                    'trace': steps})    
+            # Get the 'model' form parameter from the request
+            model = flask.request.form.get('model')
 
-            # change the reference embeddings to a dictionary
-            print(dfRefEmbeddings.columns)
-            dfRefEmbeddings.set_index('filename', inplace=True)
-
-            dictReferenceEmbeddings = dfRefEmbeddings.drop(['vulnerability'], axis=1).T.to_dict('list')
-
-            steps.append('created reference dictionary')
-
-            # calculate the distances between the reference and analyzed code
-            dfDistances = calculate_distances_from_dict(dictReferenceEmbeddings, {'ME': snippet_embeddings})
-
-            steps.append('calculated distances')
-
-            # check vulnerability
-            vulnerability_result, lstReferences = check_vulnerability(dfDistances)
-
-            steps.append('checked vulnerability')
-
-            # return a JSON string
-            return flask.jsonify({'result': vulnerability_result, 
-                                  'references': lstReferences})
+            # Get the 'vulnerability' form parameter from the request
+            vulnerability = flask.request.form.get('vulnerability')
         else:
-            return flask.jsonify({'result': 'Error: model not supported', 
-                                  'trace': steps})
+            # this part is when we only ask for a small code, part of the 
+            # actual JSON input
+            # read in JSON input 
+            input_json = flask.request.json
+
+            # get code and model from JSON
+            code = input_json['code']
+            model = input_json['model']
+            vulnerability = input_json['vulnerability']
+
+    except Exception as e:
+        return flask.jsonify({'result': 'Error: error reading input, maybe the JSON was not well formatted. Try URL encoding the code', 
+                            'references': [],
+                            'Error': e.message})
+    
+    steps.append('successfully read input JSON')
+
+    # if the number of lines in the code is larger than 100, then use the predict_large method
+    try:
+        lenCode = len(code)
+        if lenCode > 2 * chunk_size:
+            dictResult = predict_large(code, model, vulnerability, steps, chunk_size)
+            return flask.jsonify(dictResult)
+        else: 
+            dictResult[0] = predict_small(code, model, vulnerability, steps)
+            return flask.jsonify(dictResult)
     except Exception as e:
         return flask.jsonify({'result': 'Error: problem with processing the code or model not available', 
                               'Error': str(e),
                               'references': steps})
+
 
 # define an endpoint that accepts the same json as above and return the code that was sent to it
 @app.route('/echo', methods=['POST'])

@@ -83,7 +83,7 @@ def extract_embeddings_codebert_from_string(code_string):
     )
 
     # Split the code string into lines
-    lstLines = code_string.split('\n')
+    lstLines = code_string
 
     dictEmbeddings = {}
     iLines = 0

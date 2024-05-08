@@ -33,7 +33,85 @@ from scipy import spatial
 import cylberta_embeddings
 import codebert_embeddings
 import singberta_embeddings
-import codex_embeddings
+
+# predictions for small files
+def predict_small(code, model, vulnerability, steps):
+    steps = []
+
+    try:
+        # do something with code and model
+        if model == 'codebert' or model == 'singberta':
+            snippet_embeddings = codebert_embeddings.extract_embeddings_codebert_from_string(code) if model == 'codebert' else singberta_embeddings.extract_embeddings_singberta_from_string(code)
+
+            steps.append(f'extracted embeddings from {model}')
+
+            # now read the embeddings of the reference files from database/embeddings_codebert_input_validation.csv
+            dfRefEmbeddings = pd.read_csv(f'database/embeddings_{model}.csv', sep='$', index_col=None) 
+
+            steps.append('read reference embeddings: ' + str(dfRefEmbeddings.shape[0]) + ' rows ' + str(dfRefEmbeddings.shape[1]) + ' columns')
+            
+            # select only the rows that contain the vulnerability
+            dfRefEmbeddings = dfRefEmbeddings[dfRefEmbeddings['vulnerability'] == vulnerability]
+
+            steps.append('selected only the rows that contain the vulnerability')
+            
+            # if the number of rows in dfRefEmbeddings is 0, then the model is not supported
+            if dfRefEmbeddings.shape[0] == 0:
+                vulnerability_result = 'Error: vulnerability not supported'
+                steps.append('vulnebility not supported: ' + vulnerability)
+                return flask.jsonify({'result': vulnerability_result, 
+                                    'trace': steps})    
+
+            # change the reference embeddings to a dictionary
+            # print(dfRefEmbeddings.columns)
+            dfRefEmbeddings.set_index('filename', inplace=True)
+
+            dictReferenceEmbeddings = dfRefEmbeddings.drop(['vulnerability'], axis=1).T.to_dict('list')
+
+            steps.append('created reference dictionary')
+
+            # calculate the distances between the reference and analyzed code
+            dfDistances = calculate_distances_from_dict(dictReferenceEmbeddings, {'ME': snippet_embeddings})
+
+            steps.append('calculated distances')
+
+            # check vulnerability
+            vulnerability_result, lstReferences = check_vulnerability(dfDistances)
+
+            steps.append('checked vulnerability')
+
+            # return a JSON string
+            return {'result': vulnerability_result, 
+                    'references': lstReferences,
+                    'lines': code}
+        else:
+            return {'result': 'Error: model not supported',
+                    'trace': steps}
+    except Exception as e:
+        return {'result': 'Error: problem with processing the code or model not available', 
+                'Error': str(e),
+                'references': steps}
+
+# predictions for large files
+def predict_large(code, model, vulnerability, steps, chunk_size):
+    steps = steps
+    i = 0
+
+    steps.append('Large file endpoint')
+    
+    dictResult = {}
+    
+    # divide the list code into smaller parts of 50 lines
+    
+    # divide the list code into smaller parts of 50 lines
+    chunks = [code[i:i + chunk_size] for i in range(0, len(code), chunk_size)]
+
+    for oneChunk in chunks:
+        dictResult[i] = predict_small(oneChunk, model, vulnerability, steps)
+        i = i+1
+        
+    
+    return dictResult
 
 # calculate the reference embeddings that we can use for calculating the distances
 def calculate_reference_embeddings(strReferenceFolder,
@@ -52,16 +130,6 @@ def calculate_reference_embeddings(strReferenceFolder,
         dictReferenceEmbeddings = singberta_embeddings.extract_embeddings_singberta_dict(strReferenceFolder)
     else:
         dictReferenceEmbeddings = {}
-
-    return dictReferenceEmbeddings
-
-# calculate the reference embeddings that we can use for calculating the distances
-def calculate_reference_embeddings_codex(strReferenceFolder, strCodeXKeyFile):
-    '''
-    This function is used to calculate the reference embeddings.
-    '''
-
-    dictReferenceEmbeddings = codex_embeddings.extract_embeddings_codex_dict(strReferenceFolder, strCodeXKeyFile)
 
     return dictReferenceEmbeddings
 
@@ -219,8 +287,8 @@ def check_vulnerability(dfDistances):
         # print the verdict
         # changed to printing only the violations and then the examples
         
-        print('*****')
-        print(f'Module {mName} is flagged as {strVerdict}, with the following reference examples:')
+        #print('*****')
+        #print(f'Module {mName} is flagged as {strVerdict}, with the following reference examples:')
 
         lstReferences = []
 
@@ -229,7 +297,7 @@ def check_vulnerability(dfDistances):
         strRefLabels = ''
         for label in dfReferenceLabels:
             lName = label.split("/")[-1] if "/" in label else label.split("\\")[-1]
-            print(f'>>>> {lName}')
+        #    print(f'>>>> {lName}')
             strRefLabels = strRefLabels + ';' + lName
             lstReferences.append(lName) 
 
@@ -295,43 +363,6 @@ def pipeline(strReferenceFolder,
 
             # print the results
             print_results(dfDistances,strResultFile)
-
-
-def pipeline_codex(strReferenceFolder, 
-                    strCodeFolder, 
-                    strResultFile,
-                    strResultFolder,
-                    strCodeXKeyFile):
-    # calculate the reference embeddings
-    dictReferenceEmbeddings = calculate_reference_embeddings_codex(strReferenceFolder, strCodeXKeyFile)
-
-    # save reference embeddings to a file
-    dfAllEmbeddings = pd.DataFrame.from_dict(dictReferenceEmbeddings, orient='index')
-
-    # for each file in the code folder, extract the embeddings and calculate the distances
-    for strFile in os.listdir(strCodeFolder):
-        
-        # calculate the embeddings for the analyzed code
-        lstEmbeddings = codex_embeddings.extract_embeddings_codex_one_file(os.path.join(strCodeFolder, strFile), strCodeXKeyFile)
-
-        dictAnalyzedEmbeddings = {}
-
-        dictAnalyzedEmbeddings[strFile] = lstEmbeddings
-
-        dfAnalyzedEmbeddings = pd.DataFrame.from_dict(dictAnalyzedEmbeddings, orient='index')
-
-        # add the dfAnalyzedEmbeddings to the dfAllEmbeddings dataframe
-        dfAllEmbeddings = pd.concat([dfAllEmbeddings, dfAnalyzedEmbeddings])
-
-        # save all embeddings to csv
-        dfAllEmbeddings.to_csv(os.path.join(strResultFolder, 'results/embeddings_codex.csv'), sep='$')
-
-        # calculate the distances between the reference and analyzed code
-        dfDistances = calculate_distances(dictReferenceEmbeddings, 
-                                          dictAnalyzedEmbeddings)
-
-        # print the results
-        print_results(dfDistances,strResultFile)
 
 def calculate_distances_from_dict(dictReferenceEmbeddings, dictCodeEmbeddings):
     ''' Takes two dictionaries of embeddings as input and calculates the distances
